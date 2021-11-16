@@ -350,7 +350,22 @@ The parameter for forward method will be different depends on type of the loss, 
 
 The parameter could also differ from the default, but that will be out of the scope of this example.
 
-Secondly, add the created loss and their supported architecture in the whitelist at `supported_model` dict in `constants.py:47`, for example:
+Secondly, at `scripts.train_helper.get_loss`, in `loss` dict, add the new loss name and link it to the loss class. For example:
+```python
+loss = {
+    'orthocos': OrthoCosLoss,
+    'new_loss': NewLoss,
+    ...
+}
+```
+Then, at `losses` dict in `constants.py:28`, add the new loss name to the type of loss, for example, `new_loss` is a type of `supervised` loss/method:
+```python
+losses = {
+    'supervised': ['orthocos', ...,  'new_loss'],
+    ...
+}
+```
+Lastly, add the created loss and their supported architecture in the whitelist at `supported_model` dict in `constants.py:47`, for example:
 ```python
 supported_model = {
     'new_loss': ['orthohash', 'new_architecture'],
