@@ -87,10 +87,9 @@ Please head up to [Tutorials Docs](https://fast-image-retrieval.readthedocs.io/e
 If you find this framework useful in your research, please consider cite this project.
 
 ```
-
 @inproceedings{dpn2020,
   title={Deep Polarized Network for Supervised Learning of Accurate Binary Hashing Codes.},
-  author={Fan, Lixin and Ng, KamWoh and Ju, Ce and Zhang, Tianyu and Chan, Chee Seng},
+  author={Fan, Lixin and Ng, Kam Woh and Ju, Ce and Zhang, Tianyu and Chan, Chee Seng},
   booktitle={IJCAI},
   pages={825--831},
   year={2020}
@@ -98,13 +97,11 @@ If you find this framework useful in your research, please consider cite this pr
 
 @inproceedings{orthohash2021,
   title={One Loss for All: Deep Hashing with a Single Cosine Similarity based Learning Objective},
-  author={Hoe, JiunTian and Ng, KamWoh and Zhang, Tianyu and Chan, Chee Seng and Song, Yi-Zhe and Xiang, Tao},
+  author={Hoe, Jiun Tian and Ng, Kam Woh and Zhang, Tianyu and Chan, Chee Seng and Song, Yi-Zhe and Xiang, Tao},
   booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2021}
 }
-
-
-
 ```
+
 ## Contributing
 We welcome the contributions to improve this project. Please file your suggestions/issues by creating new issues or send us a pull request for your new changes/improvement/features/fixes.
