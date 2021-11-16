@@ -7,7 +7,8 @@ We recommend to start in a new conda environment or a new PyTorch docker contain
     ```
 2. Create new conda environment. Deactivate your current if you are in any other environment(e.g. `base` env).
     ```bash
-    conda create -n fast-image-retrieval -y
+    conda deactivate
+    conda create -n fast-image-retrieval python=3.8 -y
     conda activate fast-image-retrieval
     ```
 3. Install the dependencies

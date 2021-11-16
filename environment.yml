@@ -1,0 +1,7 @@
+name: fast-image-retrieval
+dependencies:
+  - python=3.8
+  - faiss
+  - pip
+  - pip:
+    - -r requirements.txt
