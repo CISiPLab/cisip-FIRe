@@ -12,12 +12,10 @@ Fast Image Retrieval is an open source image retrieval framework release by Cent
     We break the framework into parts so that one can easily implement their own method by joining up the components.
 
 ## License
-[comment]: <> (Add license)
-This project is released under [BSD-3 license]().
-## Changelog
+This project is released under [BSD 3-Clause License](https://github.com/CISiPLab/fast-image-retrieval/blob/main/LICENSE).
 
-[comment]: <> (Change to docs link)
-Please refer to [Changelog](?) for more detail.
+## Changelog
+Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/latest/misc.html#changelog) for more detail.
 ## Implemented method/backbone/datasets
 [//]: <> (This is copied from docs/implementation.md)
 ### Backbone
@@ -76,11 +74,10 @@ Please refer to [Changelog](?) for more detail.
 |CIFAR10|cifar10|
 
 ## Installation
-[comment]: <> (Change to docs link)
-Please head up to [get_started.md](docs/get_started.md) for guides on setup conda environment and installation.
+Please head up to [Get Started Docs](https://fast-image-retrieval.readthedocs.io/en/latest/get_started.html) for guides on setup conda environment and installation.
+
 ## Tutorials
-[comment]: <> (Change to docs link)
-Please head up to [tutorials.md](docs/tutorials.md) for guidances.
+Please head up to [Tutorials Docs](https://fast-image-retrieval.readthedocs.io/en/latest/tutorials.html) for guidance.
 
 [comment]: <> (## Citation)
 
