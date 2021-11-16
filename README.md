@@ -1,4 +1,7 @@
 # Fast Image Retrieval
+[![Documentation Status](https://readthedocs.org/projects/fast-image-retrieval/badge/?version=latest)](https://fast-image-retrieval.readthedocs.io/en/latest/?badge=latest)
+
+Documentation: https://fast-image-retrieval.readthedocs.io/en/latest/
 
 ## Introduction
 Fast Image Retrieval is an open source image retrieval framework release by Center of Image and Signal Processing Lab(CISiP Lab), Universiti Malaya. This framework implemented most major binary hashing methods, together with major backbone networks and major datasets.
