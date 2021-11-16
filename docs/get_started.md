@@ -15,7 +15,7 @@ We recommend to start in a new conda environment or a new PyTorch docker contain
    ```bash
    pip install -r requirements.txt
    # faiss gpu version, or `faiss-cpu` for cpu-only version
-   conda install -c pytorch faiss-gpu 
+   conda install -c pytorch faiss-gpu -y
     ```
 
 ```{admonition} Operating Systems
