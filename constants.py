@@ -50,7 +50,7 @@ supported_model = {
     'ce': ['ce'],
     'ceq': ['ce'],
     'cea': ['ce'],
-    'orthoarc': ['orhtohash'],
+    'orthoarc': ['orthohash'],
     'orthocos': ['orthohash'],
     'greedyhash-unsupervised': ['norm-unsupervised'],
     'bihalf': ['norm-unsupervised'],
