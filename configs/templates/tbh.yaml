@@ -1,0 +1,10 @@
+arch: tbh
+loss: tbh
+backbone: vgg16
+backbone_lr_scale: 0
+hash_bias: true
+
+# loss params
+loss_param:
+  adv: 1
+  rec_method: element

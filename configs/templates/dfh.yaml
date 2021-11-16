@@ -1,0 +1,9 @@
+loss: dfh
+# loss params
+loss_param:
+  mu: 1
+  vul: 1
+  m: 1
+  nta: 1
+  eta: 0.5
+  keep_train_size: true

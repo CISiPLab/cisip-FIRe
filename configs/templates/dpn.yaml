@@ -1,0 +1,21 @@
+# runtime setting
+ds: cifar10
+bs: 64
+lr: 0.0001
+nbit: 64
+# loss params
+loss_param:
+  ce: 0
+  sl: 1
+  margin: 1.0
+  reg: 0.1
+  sign_cent: true
+  cent_init: B
+
+# method settings
+loss: dpn
+arch: dpn
+backbone: alexnet
+optim: adam
+epochs: 100
+eval: 10

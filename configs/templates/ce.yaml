@@ -1,0 +1,3 @@
+loss: ce
+loss_param:
+  ce: 1

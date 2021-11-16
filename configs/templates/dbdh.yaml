@@ -1,0 +1,6 @@
+loss: dbdh
+# loss params
+loss_param:
+  alpha: 0.1
+  keep_train_size: true
+  pow: 2

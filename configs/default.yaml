@@ -1,0 +1,58 @@
+# arch and backbone
+backbone: alexnet
+pretrained: true
+bias: true
+freeze_weight: false
+keep_classifier: false
+
+# dataset
+dataset: imagenet100
+dfolder: ""
+evaluation_protocol: 1   # for cifar10 only
+reset: false
+separate_multiclass: false
+no_augmentation: true
+gpu_transform: false
+gpu_mean_transform: false
+train_skip_preprocess: false
+db_skip_preprocess: false
+test_skip_preprocess: false
+dataset_name_suffix: ''
+weak_aug: 0  # 0 no weak, 1 weak, 2 stronger weak, for self-supervised
+resize: 224
+crop: 224
+norm: 2
+
+# evaluation
+R: 0
+distance_func: hamming   # ['hamming', 'cosine', 'euclidean']
+zero_mean_eval: false
+
+# training hyperparams
+batch_size: 64
+max_batch_size: 256
+epochs: 100
+optim: adam   # ['sgd', 'adam', 'rmsprop']
+momentum: 0.9  # for sgd
+nesterov: false
+betas:  # for adam
+  - 0.9
+  - 0.999
+alpha: 0.99  # for rmsprop
+nbit: 64
+lr: 0.0001  # learning rate
+weight_decay: 0.0005  # weight decay
+scheduler: step  # LR Scheduler
+step_size: 0.8  # relative step size (0~1)
+lr_decay_rate: 0.1  # decay rate for lr
+backbone_lr_scale: 0.0   # Scale the learning rate of CNN backbone
+
+# misc
+tag: ""
+seed: -1
+device: cuda:0    # torch.device(\'?\') cpu, cuda:x
+eval: 10    # total evaluations throughout the training
+
+# loss specific parameter
+loss_param:
+  hash_fc_output: 'identity'

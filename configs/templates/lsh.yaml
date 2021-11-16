@@ -1,0 +1,5 @@
+arch: linear
+loss: lsh
+
+# loss params
+loss_param: {}

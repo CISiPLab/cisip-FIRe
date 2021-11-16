@@ -1,0 +1,9 @@
+arch: norm-unsupervised
+loss: greedyhash-unsupervised
+backbone_lr_scale: 0
+
+# loss params
+loss_param:
+  alpha: 1  # 0.1 for cifar10
+  pow: 3
+  hash_fc_output: 'identity'

@@ -1,0 +1,8 @@
+loss: adsh
+# loss params
+loss_param:
+  alpha: 1
+  beta: 1
+  s: 10
+  m: 0.2
+  method: 'cosface'  # cosface/arcface

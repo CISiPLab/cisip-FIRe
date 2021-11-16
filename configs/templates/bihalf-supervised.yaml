@@ -1,0 +1,7 @@
+loss: bihalf-supervised
+arch: ce
+hash_fc_output: 'bihalf'
+# bihalf_to_hash_fc: 1
+# bn_to_hash_fc: 0
+loss_param:
+  ce: 1

@@ -1,0 +1,5 @@
+arch: dpn
+loss: csq
+
+loss_param:
+  lambda_q: 0.001

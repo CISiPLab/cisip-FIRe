@@ -1,0 +1,29 @@
+# ds: ?
+# dfolder: ?
+
+bs: 64
+epochs: 100
+nbit: 64
+lr: 0.0001
+wd: 0.0005
+
+backbone_lr_scale: 0
+backbone: alexnet
+
+loss: orthocos
+arch: orthohash
+hash_bias: false
+
+loss_param:
+  ce: 1
+  m: 0.2
+  s: 8
+  quan: 0
+  quan_type: cs
+  multiclass_loss: label_smoothing
+  ce_fc_nclass: 0
+  cossim_ce: true
+  learn_cent: false
+  sign_cent: true
+  hash_fc_output: 'bn'
+  cent_init: B

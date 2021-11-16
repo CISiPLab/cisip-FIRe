@@ -1,0 +1,12 @@
+.idea/
+data
+data/
+csvs
+csvs/
+*.csv
+*.xlsx
+*.ipynb
+*.pth
+*.zip
+logs/
+__pycache__/

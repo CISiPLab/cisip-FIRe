@@ -1,0 +1,14 @@
+# runtime setting
+ds: cifar10
+bs: 64
+lr: 0.0001
+nbit: 16
+# method settings
+loss: bihalf
+arch: norm-unsupervised
+backbone: alexnet
+backbone_lr_scale: 0
+
+loss_param:
+  hash_fc_output: "bihalf"
+  bihalf_gamma: 6

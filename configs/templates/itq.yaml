@@ -1,0 +1,5 @@
+arch: linear
+loss: itq
+
+loss_param:
+  max_iters: 100
