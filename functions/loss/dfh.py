@@ -42,6 +42,7 @@ class DFHLoss(nn.Module):
         """
         assert len(y.shape) == 2, 'Only support one hot yet now.'
         assert ind is not None, 'ind cannot be None'
+        y = y.float()
         if self.U.get_device() != u.get_device():
             self.U = self.U.to(u.get_device())
             self.Y = self.Y.to(u.get_device())

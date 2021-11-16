@@ -5,23 +5,23 @@
 
 # Loss (Method)
 ## Supervised
-|Method|Config Template|Loss Name|
-|---|---|---|
-|ADSH|adsh.yaml|adsh|
-|BiHalf|bihalf-supervised.yaml|bihalf-supervised|
-|Cross Entropy|ce.yaml|ce|
-|CSQ|csq.yaml|csq|
-|DBDH|dbdh.yaml|dbdh|
-|DFH|dfh.yaml|dfh|
-|DPN|dpn.yaml|dpn|
-|DPSH|dpsh.yaml|dpsh|
+|Method|Config Template|Loss Name|64bit ImageNet AlexNet|
+|---|---|---|---|
+|ADSH|adsh.yaml|adsh|0|
+|BiHalf|bihalf-supervised.yaml|bihalf-supervised|2|
+|Cross Entropy|ce.yaml|ce|3|
+|CSQ|csq.yaml|csq|4|
+|DBDH|dbdh.yaml|dbdh|5 bug..|
+|DFH|dfh.yaml|dfh|bug..|
+|DPN|dpn.yaml|dpn|6|
+|DPSH|dpsh.yaml|dpsh|7|
 |DTSH|dtsh.yaml|dtsh|
 |GreedyHash|greedyhash.yaml|greedyhash|
 |HashNet|hashnet.yaml|hashnet|
 |JMLH|jmlh.yaml|jmlh|
 |MIHash|mihash.yaml|mihash|
-|OrthoCos(OrthoHash)|orthocos.yaml|orthocos|
-|OrthoArc(OrthoHash)|orthoarc.yaml|orthoarc|
+|OrthoCos (OrthoHash)|orthocos.yaml|orthocos|
+|OrthoArc (OrthoHash)|orthoarc.yaml|orthoarc|
 |SDH|sdh.yaml|sdh|
 |SDH-C|sdhc.yaml|sdhc|
 ## Unsupervised
@@ -45,7 +45,7 @@
 # Datasets
 |Dataset|Name in framework|
 |---|---|
-|ImageNet100|imagenet|
+|ImageNet100|imagenet100|
 |NUS-WIDE|nuswide|
 |MS-COCO|coco|
 |MIRFLICKR/Flickr25k|mirflickr|

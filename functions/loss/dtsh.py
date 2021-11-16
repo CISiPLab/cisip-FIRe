@@ -20,6 +20,8 @@ class DTSHLoss(nn.Module):
         ind: index
         """
         assert len(y.shape) == 2, 'Only support one hot yet now.'
+        y = y.float()
+
         inner_product = u @ u.t()
         s = y @ y.t() > 0
         count = 0

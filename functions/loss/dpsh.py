@@ -31,6 +31,7 @@ class DPSHLoss(nn.Module):
         y: onehot label (N * C)
         """
         assert len(y.size()) == 2, 'y is an one-hot vector'
+        y = y.float()
 
         if ind is not None:
             if self.U.get_device() != u.get_device():

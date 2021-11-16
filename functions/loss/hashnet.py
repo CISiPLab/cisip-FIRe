@@ -39,6 +39,7 @@ class HashNetLoss(nn.Module):
         if self.label_not_onehot:
             y = F.one_hot(y.long(), self.nclass)
         assert len(y.size()) == 2, 'y must be an one-hot vector'
+        y = y.float()
 
         u = torch.tanh(self.beta * u)
 

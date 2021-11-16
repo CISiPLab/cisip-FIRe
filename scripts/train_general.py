@@ -148,7 +148,7 @@ def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, o
             optimizer.zero_grad()
 
         data, labels, index = batch[:3]
-        data, labels, index = data.to(device), labels.to(device), index.to(device)
+        data, labels = data.to(device), labels.to(device)
         if gpu_train_transform is not None:
             if len(data.shape) == 5:
                 data[:, 0], data[:, 1] = gpu_train_transform(data[:, 0]), gpu_train_transform(data[:, 1])

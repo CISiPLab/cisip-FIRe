@@ -33,6 +33,7 @@ class DBDHLoss(nn.Module):
         """
         assert len(y.size()) == 2, 'y is an one-hot vector'
 
+        y = y.float()
         u = u.clamp(min=-1, max=1)
 
         if ind is not None:
