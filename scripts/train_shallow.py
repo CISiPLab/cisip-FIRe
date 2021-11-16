@@ -62,7 +62,7 @@ def main(config):
                                                               train_drop_last=False,
                                                               workers=workers)
     logging.info('Loading Training Data')
-    train_data = next(iter(train_loader))
+    train_data = torch.cat([x[0] for x in iter(train_loader)])
     logging.info(f'Number of Training Data: {len(train_data)}')
     # not delete train_loader, have to use for obtain codes and exporting train_out
     # del train_loader
@@ -77,8 +77,8 @@ def main(config):
 
     ##### shallow training #####
     criterion.train()
-    train_codes, quan_error = criterion(train_data[0])
-    train_labels = train_data[1]
+    train_codes, quan_error = criterion(train_data)
+    # train_labels = train_data[1]
 
     logging.info(f'Quantization Error: {quan_error:.4f}')
 
