@@ -9,7 +9,7 @@ Fast Image Retrieval is an open source image retrieval project release by Center
 ### Major features
 - **One for All**
 
-    Herein, we unified (i) various binary hashing methods, (ii) different backbone, and (iii) multiple datasets under a single framework to ease the research and benchmarking in this domain. It supports popular binary hashing methods, e.g. HashNet, GreedyHash, DPN, OrthoHash, etc.
+    Herein, we unified (i) various binary hashing methods, (ii) different backbone, and (iii) multiple datasets under a single framework to ease the research and benchmarking in this domain. It supports popular binary hashing methods, e.g. [HashNet](https://openaccess.thecvf.com/content_ICCV_2017/papers/Cao_HashNet_Deep_Learning_ICCV_2017_paper.pdf), [GreedyHash](https://papers.nips.cc/paper/2018/hash/13f3cf8c531952d72e5847c4183e6910-Abstract.html), [DPN](https://www.ijcai.org/proceedings/2020/115), [OrthoHash](https://arxiv.org/abs/2109.14449), etc.
 - **Modularity**
 
     We break the framework into parts so that one can easily implement their own method by joining up the components.
