@@ -30,4 +30,4 @@ class ArchSingle(BaseArch):
     def forward(self, x):
         x = self.backbone(x)
         v = self.hash_fc(x)
-        return v
+        return None, v

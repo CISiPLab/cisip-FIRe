@@ -71,5 +71,5 @@ supported_model = {
     'lsh': ['linear'],
     'sh': ['linear'],
     'cibhash': ['cibhash'],
-    'mihash': ['single']
+    'mihash': ['dpn']
 }
