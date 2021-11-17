@@ -30,21 +30,21 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 #### Supervised
 |Method|Config Template|Loss Name|
 |---|---|---|
-|ADSH|adsh.yaml|adsh|
-|BiHalf|bihalf-supervised.yaml|bihalf-supervised|
+|[ADSH](https://arxiv.org/abs/1707.08325)|adsh.yaml|adsh|
+|[BiHalf](https://arxiv.org/abs/2012.12334)|bihalf-supervised.yaml|bihalf-supervised|
 |Cross Entropy|ce.yaml|ce|
-|CSQ|csq.yaml|csq|
-|DBDH|dbdh.yaml|dbdh|
-|DFH|dfh.yaml|dfh|
-|DPN|dpn.yaml|dpn|
-|DPSH|dpsh.yaml|dpsh|
-|DTSH|dtsh.yaml|dtsh|
-|GreedyHash|greedyhash.yaml|greedyhash|
-|HashNet|hashnet.yaml|hashnet|
+|[CSQ](https://arxiv.org/abs/1908.00347)|csq.yaml|csq|
+|[DBDH](https://www.sciencedirect.com/science/article/abs/pii/S0925231220306032)|dbdh.yaml|dbdh|
+|[DFH](https://arxiv.org/abs/1909.00206)|dfh.yaml|dfh|
+|[DPN](https://www.ijcai.org/proceedings/2020/115)|dpn.yaml|dpn|
+|[DPSH](https://cs.nju.edu.cn/lwj/paper/IJCAI16_DPSH.pdf)|dpsh.yaml|dpsh|
+|[DTSH](https://arxiv.org/abs/1612.03900)|dtsh.yaml|dtsh|
+|[GreedyHash](https://papers.nips.cc/paper/2018/hash/13f3cf8c531952d72e5847c4183e6910-Abstract.html)|greedyhash.yaml|greedyhash|
+|[HashNet](https://openaccess.thecvf.com/content_ICCV_2017/papers/Cao_HashNet_Deep_Learning_ICCV_2017_paper.pdf)|hashnet.yaml|hashnet|
 |JMLH|jmlh.yaml|jmlh|
 |MIHash|mihash.yaml|mihash|
-|OrthoCos(OrthoHash)|orthocos.yaml|orthocos|
-|OrthoArc(OrthoHash)|orthoarc.yaml|orthoarc|
+|[OrthoCos(OrthoHash)](https://arxiv.org/abs/2109.14449)|orthocos.yaml|orthocos|
+|[OrthoArc(OrthoHash)](https://arxiv.org/abs/2109.14449)|orthoarc.yaml|orthoarc|
 |SDH|sdh.yaml|sdh|
 |SDH-C|sdhc.yaml|sdhc|
 #### Unsupervised
@@ -52,7 +52,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 |---|---|---|
 |BiHalf|bihalf.yaml|bihalf|
 |CIBHash|cibhash.yaml|cibhash|
-|GreedyHash|greedyhash-unsupervised.yaml|greedyhash-unsupervised|
+|[GreedyHash](https://papers.nips.cc/paper/7360-greedy-hash-towards-fast-optimization-for-accurate-hash-coding-in-cnn.pdf)|greedyhash-unsupervised.yaml|greedyhash-unsupervised|
 |SSDH|ssdh.yaml|ssdh|
 |TBH|tbh.yaml|tbh|
 #### Shallow (Non-Deep learning methods)
