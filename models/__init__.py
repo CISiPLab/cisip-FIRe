@@ -27,4 +27,5 @@ from models.architectures.arch_dpn import *
 from models.architectures.arch_gh import *
 from models.architectures.arch_jmlh import *
 from models.architectures.arch_norm_unsupervised import *
+from models.architectures.arch_single import *
 from models.architectures.arch_tbh import *

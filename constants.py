@@ -70,5 +70,6 @@ supported_model = {
     'itq': ['linear'],
     'lsh': ['linear'],
     'sh': ['linear'],
-    'cibhash': ['cibhash']
+    'cibhash': ['cibhash'],
+    'mihash': ['single']
 }
