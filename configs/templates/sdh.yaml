@@ -2,6 +2,8 @@ loss: sdh
 # loss params
 loss_param:
   lmbd0: 0.001
-  lmbd1: 1
+  lmbd1: 0.001
   lmbd2: 0.001
   alpha: 1
+  hash_fc_output: tanh
+#  keep_train_size: true
