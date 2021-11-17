@@ -5,7 +5,7 @@ from models.architectures.helper import get_hash_fc_with_normalizations, get_bac
 @register_network('single')
 class ArchSingle(BaseArch):
     """Arch Single for single code output"""
-    def _init_(self, config, **kwargs):
+    def __init__(self, config, **kwargs):
         super(ArchSingle, self).__init__(config, **kwargs)
 
         hash_layer = config['loss_param'].get('hash_layer', 'identity')
