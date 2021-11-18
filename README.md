@@ -32,7 +32,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 |---|---|---|---|
 |[ADSH](https://arxiv.org/abs/1707.08325)|[adsh.yaml](configs/templates/adsh.yaml)|adsh|0.645|
 |[BiHalf](https://arxiv.org/abs/2012.12334)|[bihalf-supervised.yaml](configs/templates/bihalf-supervised.yaml)|bihalf-supervised|0.684|
-|Cross Entropy|[ce.yaml](configs/templates/)|ce|0.434|
+|Cross Entropy|[ce.yaml](configs/templates/ce.yaml)|ce|0.434|
 |[CSQ](https://arxiv.org/abs/1908.00347)|[csq.yaml](configs/templates/csq.yaml)|csq|0.686|
 |[DFH](https://arxiv.org/abs/1909.00206)|[dfh.yaml](configs/templates/dfh.yaml)|dfh|0.689|
 |[DPN](https://www.ijcai.org/proceedings/2020/115)|[dpn.yaml](configs/templates/dpn.yaml)|dpn|0.692|
@@ -41,8 +41,8 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 |[GreedyHash](https://papers.nips.cc/paper/2018/hash/13f3cf8c531952d72e5847c4183e6910-Abstract.html)|[greedyhash.yaml](configs/templates/greedyhash.yaml)|greedyhash|0.667|
 |[HashNet](https://openaccess.thecvf.com/content_ICCV_2017/papers/Cao_HashNet_Deep_Learning_ICCV_2017_paper.pdf)|[hashnet.yml](configs/templates/hashnet.yml)|hashnet|0.588|
 |[JMLH](https://openaccess.thecvf.com/content_ICCVW_2019/papers/CEFRL/Shen_Embarrassingly_Simple_Binary_Representation_Learning_ICCVW_2019_paper.pdf)|[jmlh.yaml](configs/templates/jmlh.yaml)|jmlh|0.664|
-|[OrthoCos(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthocos.yaml](configs/templates/orthocos.yaml)|orthocos|0.701182|
-|[OrthoArc(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthoarc.yaml](configs/templates/orthoarc.yaml)|orthoarc|0.697745|
+|[OrthoCos(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthocos.yaml](configs/templates/orthocos.yaml)|orthocos|**0.701**|
+|[OrthoArc(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthoarc.yaml](configs/templates/orthoarc.yaml)|orthoarc|0.698|
 |SDH-C|[sdhc.yaml](configs/templates/sdhc.yaml)|sdhc|0.639|
 ## Unsupervised
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
