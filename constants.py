@@ -59,7 +59,7 @@ supported_model = {
     'sdhc': ['ce'],
     'csq': ['dpn'],
     'dfh': ['dpn'],
-    'dbdh': ['dpn'],
+    'dbdh': ['dpn', 'single'],
     'dpsh': ['dpn'],
     'hashnet': ['dpn'],
     'dtsh': ['dpn'],
@@ -71,5 +71,5 @@ supported_model = {
     'lsh': ['linear'],
     'sh': ['linear'],
     'cibhash': ['cibhash'],
-    'mihash': ['dpn']
+    'mihash': ['single', 'dpn']
 }

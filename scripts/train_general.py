@@ -498,7 +498,6 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
 
         ##### model saving #####
         modelsd = model.state_dict()
-        # GLDv2 kiasu: save weight before evaluate just in case oom
         if config['save_checkpoint']:
             if isinstance(optimizer, list):
                 optim_sd = [opt.state_dict() for opt in optimizer]

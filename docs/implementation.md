@@ -19,26 +19,26 @@
 |[GreedyHash](https://papers.nips.cc/paper/2018/hash/13f3cf8c531952d72e5847c4183e6910-Abstract.html)|greedyhash.yaml|greedyhash|0.667|
 |[HashNet](https://openaccess.thecvf.com/content_ICCV_2017/papers/Cao_HashNet_Deep_Learning_ICCV_2017_paper.pdf)|hashnet.yml|hashnet|0.588|
 |JMLH|jmlh.yaml|jmlh|0.664|
-|MIHash|mihash.yaml|mihash|?|
+|MIHash|mihash.yaml|mihash|x|
 |[OrthoCos(OrthoHash)](https://arxiv.org/abs/2109.14449)|orthocos.yaml|orthocos|0.701182|
 |[OrthoArc(OrthoHash)](https://arxiv.org/abs/2109.14449)|orthoarc.yaml|orthoarc|0.697745|
 |SDH|sdh.yaml|sdh|x|
-|SDH-C|sdhc.yaml|sdhc|?|
+|SDH-C|sdhc.yaml|sdhc|0.639|
 ## Unsupervised
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
 |BiHalf|bihalf.yaml|bihalf|0.403|
-|CIBHash|cibhash.yaml|cibhash|?|0.686401
+|CIBHash|cibhash.yaml|cibhash|0.322|0.686401
 |[GreedyHash](https://papers.nips.cc/paper/7360-greedy-hash-towards-fast-optimization-for-accurate-hash-coding-in-cnn.pdf)|greedyhash-unsupervised.yaml|greedyhash-unsupervised|0.407|
-|SSDH|ssdh.yaml|ssdh|x|
+|SSDH|ssdh.yaml|ssdh|0.146|
 |TBH|tbh.yaml|tbh|0.324|
 ## Shallow (Non-Deep learning methods)
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
-|ITQ|itq.yaml|itq|0.402356|
-|LsH|lsh.yaml|lsh|0.205953|
-|PCAHash|pca.yaml|pca|0.404909|
-|SH|sh.yaml|sh|0.350302|
+|ITQ|itq.yaml|itq|0.402|
+|LsH|lsh.yaml|lsh|0.206|
+|PCAHash|pca.yaml|pca|0.405|
+|SH|sh.yaml|sh|0.350|
 
 ```{warning}
 Shallow methods only works with descriptor datasets. We will upload the descriptor datasets and 
