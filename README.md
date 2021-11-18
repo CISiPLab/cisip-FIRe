@@ -21,13 +21,13 @@ This project is released under [BSD 3-Clause License](https://github.com/CISiPLa
 Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/latest/misc.html#changelog) for more detail.
 ## Implemented method/backbone/datasets
 [//]: <> (This is copied from docs/implementation.md)
-# Backbone
+### Backbone
 1. Alexnet
 2. VGG{16}
 3. ResNet{18,34,50,101,152}
 
-# Loss (Method)
-## Supervised
+### Loss (Method)
+#### Supervised
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
 |[ADSH](https://arxiv.org/abs/1707.08325)|[adsh.yaml](configs/templates/adsh.yaml)|adsh|0.645|
@@ -44,7 +44,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 |[OrthoCos(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthocos.yaml](configs/templates/orthocos.yaml)|orthocos|**0.701**|
 |[OrthoArc(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthoarc.yaml](configs/templates/orthoarc.yaml)|orthoarc|0.698|
 |SDH-C|[sdhc.yaml](configs/templates/sdhc.yaml)|sdhc|0.639|
-## Unsupervised
+#### Unsupervised
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
 |[BiHalf](https://arxiv.org/abs/2012.12334)|[bihalf.yaml](configs/templates/bihalf.yaml)|bihalf|0.403|
@@ -52,7 +52,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 |[GreedyHash](https://papers.nips.cc/paper/7360-greedy-hash-towards-fast-optimization-for-accurate-hash-coding-in-cnn.pdf)|[greedyhash-unsupervised.yaml](configs/templates/greedyhash-unsupervised.yaml)|greedyhash-unsupervised|0.407|
 |[SSDH](https://ieeexplore.ieee.org/document/8101524)|[ssdh.yaml](configs/templates/ssdh.yaml)|ssdh|0.146|
 |[TBH](https://openaccess.thecvf.com/content_CVPR_2020/papers/Shen_Auto-Encoding_Twin-Bottleneck_Hashing_CVPR_2020_paper.pdf)|[tbh.yaml](configs/templates/tbh.yaml)|tbh|0.324|
-## Shallow (Non-Deep learning methods)
+#### Shallow (Non-Deep learning methods)
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
 |[ITQ](https://slazebni.cs.illinois.edu/publications/ITQ.pdf)|[itq.yaml](configs/templates/itq.yaml)|itq|0.402|
@@ -64,7 +64,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 Shallow methods only works with descriptor datasets. We will upload the descriptor datasets and 
 ```
 
-# Datasets
+### Datasets
 |Dataset|Name in framework|
 |---|---|
 |ImageNet100|imagenet100|
