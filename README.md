@@ -1,4 +1,4 @@
-# Fast Image Retrieval
+# cisip-FIRe - Fast Image Retrieval
 [![Documentation Status](https://readthedocs.org/projects/fast-image-retrieval/badge/?version=latest)](https://fast-image-retrieval.readthedocs.io/en/latest/?badge=latest)
 
 Documentation: https://fast-image-retrieval.readthedocs.io/en/latest/
