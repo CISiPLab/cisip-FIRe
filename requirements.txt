@@ -10,3 +10,4 @@ pandas
 kornia
 pytorch_memlab
 pyyaml
+wandb

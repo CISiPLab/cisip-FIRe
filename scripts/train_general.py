@@ -11,6 +11,7 @@ import pandas as pd
 import torch
 from torch.backends import cudnn
 from tqdm import tqdm
+import wandb
 
 import configs
 from functions.hashing import get_hadamard
@@ -394,6 +395,16 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     load_model(model, config)
     preprocess(model, config, device)
 
+    if config['wandb_enable']:
+        ## initiaze wandb ##
+        wandb_dir = logdir
+        wandb.init(config=config, dir=wandb_dir)
+        # wandb run name
+        wandb.run.name = logdir.split('logs/')[1]
+
+        # os.makedirs(wandb_dir, exist_ok=True)
+        wandb.watch(model)
+
     ##### pre-training initilization #####
     loss_param = config.copy()
     loss_param.update({
@@ -496,6 +507,11 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
         for key in train_meters: res['train_' + key] = train_meters[key].avg
         train_history.append(res)
 
+        if config['wandb_enable']:
+            wandb_train = res.copy()
+            wandb_train.pop("ep")
+            wandb.log(wandb_train, step=res['ep'])
+
         ##### model saving #####
         modelsd = model.state_dict()
         if config['save_checkpoint']:
@@ -556,6 +572,11 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
             curr_metric = res['mAP']
             test_history.append(res)
 
+            if config['wandb_enable']:
+                wandb_test = res.copy()
+                wandb_test.pop("ep")
+                wandb.log(wandb_test, step=res['ep'])
+
             io.fast_save(db_out, f'{logdir}/outputs/db_out.pth')
             io.fast_save(test_out, f'{logdir}/outputs/test_out.pth')
             del db_out, test_out
@@ -593,6 +614,7 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
 
         if best < curr_metric:
             best = curr_metric
+            wandb.run.summary["best_map"] = best
             if config['save_model']:
                 io.fast_save(modelsd, f'{logdir}/models/best.pth')
 

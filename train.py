@@ -155,6 +155,9 @@ if __name__ == "__main__":
     parser.add_argument('--accimage', default=False, action='store_true', help='use accimage as backend')
     parser.add_argument('--pin-memory', default=False, action='store_true', help='pin memory')
 
+    # wandb settings
+    parser.add_argument('--wandb', action='store_true', default=False, help='enable wandb logging')
+
     args = parser.parse_args()
     yaml_loss_param = {}
     custom_param = {}
@@ -299,7 +302,8 @@ if __name__ == "__main__":
         'load_from': args.load_from,
         'save_model': args.save_model,
         'benchmark': args.benchmark,
-        'num_worker': args.num_worker
+        'num_worker': args.num_worker,
+        'wandb_enable': args.wandb
     }
 
     if args.R == 0:
