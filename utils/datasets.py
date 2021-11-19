@@ -70,7 +70,7 @@ class HashingDataset(Dataset):
             self.loader = torch.load
 
         self.train_data = np.array(self.train_data)
-        self.train_labels = np.array(self.train_labels, dtype=np.float)
+        self.train_labels = np.array(self.train_labels, dtype=float)
 
         if ratio != 1:
             assert 0 < ratio < 1, 'data ratio is in between 0 and 1 exclusively'
