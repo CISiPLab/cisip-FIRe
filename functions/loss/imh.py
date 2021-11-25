@@ -7,7 +7,7 @@ from sklearn.manifold import TSNE
 
 
 def manifold_learning(x, nbit):
-    tsne = TSNE(nbit, learning_rate='auto', init='pca', method='exact')
+    tsne = TSNE(nbit, init='pca', method='exact')
     y = tsne.fit_transform(x)
     return y
 
