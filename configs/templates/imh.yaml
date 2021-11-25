@@ -1,5 +1,5 @@
 arch: linear
-loss: pca
+loss: imh
 
 # loss params
 loss_param: {}
