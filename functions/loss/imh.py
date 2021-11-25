@@ -21,7 +21,7 @@ class IMHLoss(nn.Module):
         self.kmeans_iters = kmeans_iters
         self.m = m  # base set size
         self.k = k  # knn size
-        self.bandwidth = bandwidth # if 0, we compute from data variance
+        self.bandwidth = torch.tensor(bandwidth)  # if 0, we compute from data variance
 
         self.kmeans = None
         self.knn_index = None
@@ -43,7 +43,7 @@ class IMHLoss(nn.Module):
 
         distances, neighbors = self.kmeans.index.search(query, self.k)
 
-        gaussianw = torch.exp(- torch.from_numpy(distances) / self.bandwidth)
+        gaussianw = torch.exp(- torch.from_numpy(distances) / self.bandwidth.view(1, -1))
         gaussianw = gaussianw / gaussianw.sum(dim=1, keepdim=True)  # (qn, k)
 
         base_neighbors = self.base_set[neighbors]  # (qn, k, nbit)
