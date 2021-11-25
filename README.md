@@ -60,6 +60,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 #### Shallow (Non-Deep learning methods)
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
+|[IMH](https://ieeexplore.ieee.org/abstract/document/7047876)|[imh.yaml](configs/templates/imh.yaml)|imh|0.467|
 |[ITQ](https://slazebni.cs.illinois.edu/publications/ITQ.pdf)|[itq.yaml](configs/templates/itq.yaml)|itq|0.402|
 |[LsH](https://dl.acm.org/doi/10.1145/276698.276876)|[lsh.yaml](configs/templates/lsh.yaml)|lsh|0.206|
 |PCAHash|[pca.yaml](configs/templates/pca.yaml)|pca|0.405|

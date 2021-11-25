@@ -1,0 +1,9 @@
+arch: linear
+loss: imh
+
+# loss params
+loss_param:
+  kmeans_iters: 200
+  m: 400
+  k: 5
+  bandwidth: 512.0
