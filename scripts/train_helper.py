@@ -17,6 +17,7 @@ from functions.loss.dpsh import DPSHLoss
 from functions.loss.dtsh import DTSHLoss
 from functions.loss.greedyhash import GreedyHashLoss, GreedyHashUnsupervisedLoss
 from functions.loss.hashnet import HashNetLoss
+from functions.loss.imh import IMHLoss
 from functions.loss.itq import ITQLoss
 from functions.loss.jmlh import JMLH
 from functions.loss.lsh import LSHLoss
@@ -59,7 +60,8 @@ def get_loss(loss_name, **cfg):
         'pca': PCALoss,
         'lsh': LSHLoss,
         'sh': SHLoss,
-        'cibhash': CIBHashLoss
+        'cibhash': CIBHashLoss,
+        'imh': IMHLoss
     }
     if loss_name not in loss:
         raise NotImplementedError(f'not implemented for {loss_name}')

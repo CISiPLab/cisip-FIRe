@@ -32,7 +32,7 @@ losses = {
     'unsupervised': ['greedyhash-unsupervised', 'bihalf', 'ssdh'],
     'autoencoder': [],
     'adversarial': ['tbh'],
-    'shallow': ['itq', 'pca', 'lsh', 'sh'],
+    'shallow': ['itq', 'pca', 'lsh', 'sh', 'imh'],
     'contrastive': ['cibhash']
 }
 
@@ -70,6 +70,7 @@ supported_model = {
     'itq': ['linear'],
     'lsh': ['linear'],
     'sh': ['linear'],
+    'imh': ['linear'],
     'cibhash': ['cibhash'],
     'mihash': ['single', 'dpn']
 }
