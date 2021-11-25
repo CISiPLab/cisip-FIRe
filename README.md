@@ -1,5 +1,8 @@
+<div align="left">
+<img width="450" alt="screener" src="https://user-images.githubusercontent.com/23725126/143378891-79b49584-700c-45f2-994c-1c077c7418c3.png"><br><br>
+</div>
 
-<img width="450" alt="Screenshot 2021-11-25 at 12 16 16 PM" src="https://user-images.githubusercontent.com/23725126/143378891-79b49584-700c-45f2-994c-1c077c7418c3.png">
+-----------------
 
 [![Documentation Status](https://readthedocs.org/projects/fast-image-retrieval/badge/?version=latest)](https://fast-image-retrieval.readthedocs.io/en/latest/?badge=latest)
 
