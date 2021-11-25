@@ -13,7 +13,7 @@ def manifold_learning(x, nbit):
 
 
 class IMHLoss(nn.Module):
-    def __init__(self, nbit, kmeans_iters=200, m=400, k=5, bandwidth=0.0, **kwargs):
+    def __init__(self, nbit, kmeans_iters=200, m=400, k=5, bandwidth=512., **kwargs):
         super(IMHLoss, self).__init__()
 
         self.built = False
@@ -21,7 +21,7 @@ class IMHLoss(nn.Module):
         self.kmeans_iters = kmeans_iters
         self.m = m  # base set size
         self.k = k  # knn size
-        self.bandwidth = torch.tensor(bandwidth)  # if 0, we compute from data variance
+        self.bandwidth = bandwidth
 
         self.kmeans = None
         self.knn_index = None
@@ -43,7 +43,7 @@ class IMHLoss(nn.Module):
 
         distances, neighbors = self.kmeans.index.search(query, self.k)
 
-        gaussianw = torch.exp(- torch.from_numpy(distances) / self.bandwidth.view(1, -1))
+        gaussianw = torch.exp(- torch.from_numpy(distances) / self.bandwidth)
         gaussianw = gaussianw / gaussianw.sum(dim=1, keepdim=True)  # (qn, k)
 
         base_neighbors = self.base_set[neighbors]  # (qn, k, nbit)
@@ -65,9 +65,6 @@ class IMHLoss(nn.Module):
             dim = x.size(1)
             self.kmeans = faiss.Kmeans(d=dim, k=self.m, niter=self.kmeans_iters)
             self.kmeans.train(x.cpu().numpy())
-
-            if self.bandwidth == 0:
-                self.bandwidth = torch.var(x.cpu(), dim=0)
 
             logging.info('Manifold Learning')
             self.base_set = manifold_learning(self.kmeans.centroids, self.nbit)
