@@ -320,7 +320,6 @@ if __name__ == "__main__":
 
     config['zero_mean_eval'] = args.zero_mean_eval
     if len(custom_param) != 0:
-        # todo: a better way to load custom param
         logging.info('Custom Param enabled! No overridden will be perform')
         update(config, custom_param)
 
