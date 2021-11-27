@@ -172,7 +172,8 @@ class GaussianBlur(object):
 
         return img
 
-
+# TODO: this can be implemented with: kornia.filters.GaussianBlur2d
+# https://kornia.readthedocs.io/en/latest/filters.html#kornia.filters.GaussianBlur2d
 class GaussianBlurOpenCV(object):
     # Implements Gaussian blur as described in the SimCLR paper
     def __init__(self, kernel_size, min=0.1, max=2.0):
