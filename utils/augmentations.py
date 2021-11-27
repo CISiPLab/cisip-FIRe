@@ -172,8 +172,7 @@ class GaussianBlur(object):
 
         return img
 
-# TODO: this can be implemented with: kornia.filters.GaussianBlur2d
-# https://kornia.readthedocs.io/en/latest/filters.html#kornia.filters.GaussianBlur2d
+
 class GaussianBlurOpenCV(object):
     # Implements Gaussian blur as described in the SimCLR paper
     def __init__(self, kernel_size, min=0.1, max=2.0):
@@ -191,5 +190,48 @@ class GaussianBlurOpenCV(object):
         if prob < 0.5:
             sigma = (self.max - self.min) * np.random.random_sample() + self.min
             sample = cv2.GaussianBlur(sample, (self.kernel_size, self.kernel_size), sigma)
+
+        return sample
+
+
+class GaussianBlurKornia(object):
+    """
+    Gaussian Blue using Kornia
+    Note that this support gpu operation but required torch.Tensor instead of PIL.Image.
+
+    Here are some performance comparison on cpu measured in ms per image.
+    ----------------------------
+    |Image size |Kornia |OpenCV |
+    -----------------------------
+    |224        |10.2   |11.4   |
+    |512        |17.1   |16.1   |
+    |1024       |41.2   |30.1   |
+    |2048       |179    |92.5   |
+    -----------------------------
+
+    Examples:
+        >>> transform = transforms.Compose([transforms.Resize(224), \
+                                            transforms.ToTensor(), \
+                                            GaussianBlurKornia(kernel_size=3),])
+        >>> transform(img)
+    """
+    # Implements Gaussian blur as described in the SimCLR paper
+    def __init__(self, kernel_size, min=0.1, max=2.0):
+        self.min = min
+        self.max = max
+        # kernel size is set to be 10% of the image height/width
+        self.kernel_size = kernel_size
+
+    def __call__(self, sample: torch.Tensor):
+        sample = sample.unsqueeze(0)
+
+        # blur the image with a 50% chance
+        prob = np.random.random_sample()
+
+        if prob < 0.5:
+            sigma = (self.max - self.min) * np.random.random_sample() + self.min
+            sample = kornia.filters.gaussian_blur2d(sample,
+                                                    (self.kernel_size, self.kernel_size),
+                                                    (sigma, sigma))
 
         return sample
