@@ -11,3 +11,4 @@ kornia
 pytorch_memlab
 pyyaml
 wandb
+Flask~=1.1.2

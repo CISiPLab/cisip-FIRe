@@ -614,7 +614,8 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
 
         if best < curr_metric:
             best = curr_metric
-            wandb.run.summary["best_map"] = best
+            if config['wandb_enable']:
+                wandb.run.summary["best_map"] = best
             if config['save_model']:
                 io.fast_save(modelsd, f'{logdir}/models/best.pth')
 

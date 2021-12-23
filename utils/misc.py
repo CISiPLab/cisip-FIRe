@@ -1,5 +1,6 @@
 import time
 
+from PIL import Image
 from torch.nn import DataParallel
 
 
@@ -90,6 +91,11 @@ def dot_dict(d):
             outd[k] = v
 
     return _dot_dict(outd)
+
+
+def pil_loader(f) -> Image.Image:
+    img = Image.open(f)
+    return img.convert('RGB')
 
 
 if __name__ == '__main__':
