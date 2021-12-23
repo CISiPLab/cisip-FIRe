@@ -130,7 +130,7 @@ To start with this inference
 3. Drag an image to the white box area and click on `Upload File`.
 4. Here you go.
    
-   .. image:: static/web_interface.png
+   ![web interface](static/web_interface.png)
 
 # Custom dataset
 In `utils/datasets.py`, create a Dataset class for your custom dataset. Make sure return `image, class_id, and index_id` for each item.
