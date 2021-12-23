@@ -1,5 +1,5 @@
 body {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(255, 80, 80, 0.9);
 }
 
 .head {
@@ -46,67 +46,12 @@ p.message {
     font-size: 18px;
 }
 
-/*form {*/
-/*    position: relative;*/
-/*    top: 50%;*/
-/*    left: 50%;*/
-/*    margin-top: 100px;*/
-/*    margin-left: -250px;*/
-/*    width: 500px;*/
-/*    height: 200px;*/
-/*    border: 4px dashed #fff;*/
-/*}*/
-
 form {
     /*position: relative;*/
     /*top: 50%;*/
     /*left: 50%;*/
     width: 400px;
 }
-
-/*form p {*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*    font-size: 20px;*/
-/*    text-align: center;*/
-/*    line-height: 170px;*/
-/*    color: #ffffff;*/
-/*    font-family: Garamond;*/
-/*}*/
-
-/*form input {*/
-/*    position: absolute;*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*    outline: none;*/
-/*    opacity: 1;*/
-/*}*/
-
-/*form button {*/
-/*    margin: 0;*/
-/*    color: #fff;*/
-/*    background: #16a085;*/
-/*    border: none;*/
-/*    width: 500px;*/
-/*    height: 35px;*/
-/*    margin-top: -20px;*/
-/*    margin-left: -4px;*/
-/*    border-radius: 4px;*/
-/*    border-bottom: 4px solid #117A60;*/
-/*    transition: all .2s ease;*/
-/*    outline: none;*/
-/*}*/
-
-/*form button:hover {*/
-/*    background: #149174;*/
-/*    color: #0C5645;*/
-/*}*/
-
-/*form button:active {*/
-/*    border: 0;*/
-/*}*/
 
 #upload {
     opacity: 0;
@@ -117,6 +62,19 @@ form {
     top: 50%;
     left: 1rem;
     transform: translateY(-50%);
+}
+
+.footer-text {
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+}
+
+.footer-desc {
+    text-align: justify;
+}
+
+.footer-link {
+    text-align: left;
 }
 
   

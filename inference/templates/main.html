@@ -55,7 +55,8 @@
             <div class="col">
                 <!--                <br>-->
                 <div class="card text-center" style="width: 10rem;">
-                    <img src="{{ url_for('get_image', filename=path) }}" style="height: 10rem;" class="card-img-top smalling" alt="...">
+                    <img src="{{ url_for('get_image', filename=path) }}" style="height: 10rem;"
+                         class="card-img-top smalling" alt="...">
                     <div class="card-body">
                         <p class="card-text">Distance: {{ dists[loop.index0] }}</p>
                     </div>
@@ -93,4 +94,14 @@
 </div>
 
 </body>
+<!-- Footer -->
+<footer class="page-footer font-small blue pt-4">
+    <!-- Copyright -->
+    <div class="footer-copyright text-center p-4 footer-text" style="background-color: rgba(0, 0, 0, 0.15);">© 2021
+        Copyright CISiP Lab
+        <a class="text-reset fw-bold" href="https://github.com/CISiPLab/cisip-FIRe"> Github: CISiP-FIRe</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+<!-- Footer -->
 </html>
