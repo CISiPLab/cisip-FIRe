@@ -87,7 +87,7 @@ if __name__ == "__main__":
         configs.default_workers = os.cpu_count()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', help="configuration file *.yml", type=str, required=False, default='')
+    parser.add_argument('--config', help="configuration file *.yml", type=str, required=False, default='configs/templates/orthocos.yaml')
     parser.add_argument('--backbone', default='alexnet', type=str, help='the backbone feature extractor')
     parser.add_argument('--ds', default='imagenet100', choices=[dataset for key in constants.datasets
                                                                 for dataset in constants.datasets[key]], help='dataset')
