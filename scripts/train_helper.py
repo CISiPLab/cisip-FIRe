@@ -274,7 +274,7 @@ def prepare_dataloader(config,
     return train_loader, test_loader, db_loader
 
 
-def prepare_model(config, device):
+def prepare_model(config, device: torch.device):
     """
 
     :param config:
@@ -302,16 +302,16 @@ def prepare_model(config, device):
     #     logging.info('Using DataParallel Model')
     #     model = DataParallelPassthrough(model)
 
-    if (torch.cuda.device_count() == 0) or (config['device'] == 'cpu'):
+    if (torch.cuda.device_count() == 0) or (device.type == 'cpu'):  # cpu
         device_ids = []
         is_cpu = True
-    elif (torch.cuda.device_count() > 0) and ('cuda:' in config['device']):
-        device_ids = [int(config['device'].split(':')[1])]
+    elif (torch.cuda.device_count() > 0) and device.index is not None:  # select gpu
+        device_ids = [device.index]
         is_cpu = False
-    else:
+    else:  # all gpu
         device_ids = None
         is_cpu = False
-    logging.info(f'Using DataParallel Model. Device id = {device_ids}. is_cpu={is_cpu}')
+    logging.info(f'Using DataParallel Model. Device id = {device_ids}. is_cpu={is_cpu} device={device}')
     model = DataParallelPassthrough(model, device_ids=device_ids, is_cpu=is_cpu)
 
     model = model.to(device)
