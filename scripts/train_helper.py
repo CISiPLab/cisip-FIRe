@@ -298,8 +298,21 @@ def prepare_model(config, device):
     """
     logging.info('Creating Model')
     model = configs.arch(config)
-    if (torch.cuda.device_count() > 1) and (config['device'] == 'cuda'):  # cuda device is not specified, use all
-        logging.info('Using DataParallel Model')
-        model = DataParallelPassthrough(model)
+    # if (torch.cuda.device_count() > 1) and (config['device'] == 'cuda'):  # cuda device is not specified, use all
+    #     logging.info('Using DataParallel Model')
+    #     model = DataParallelPassthrough(model)
+
+    if (torch.cuda.device_count() == 0) or (config['device'] == 'cpu'):
+        device_ids = []
+        is_cpu = True
+    elif (torch.cuda.device_count() > 0) and ('cuda:' in config['device']):
+        device_ids = [int(config['device'].split(':')[1])]
+        is_cpu = False
+    else:
+        device_ids = None
+        is_cpu = False
+    logging.info(f'Using DataParallel Model. Device id = {device_ids}. is_cpu={is_cpu}')
+    model = DataParallelPassthrough(model, device_ids=device_ids, is_cpu=is_cpu)
+
     model = model.to(device)
     return model

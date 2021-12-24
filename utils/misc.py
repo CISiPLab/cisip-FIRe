@@ -57,6 +57,16 @@ def to_list(v):
 
 
 class DataParallelPassthrough(DataParallel):
+    def __init__(self, module, device_ids=None, output_device=None, dim=0, is_cpu=False):
+        super(DataParallel, self).__init__()
+        if is_cpu:
+            self.module = module
+            self.device_ids = []
+            return
+        else:
+            super(DataParallelPassthrough, self).__init__(module, device_ids=device_ids,
+                                                          output_device=output_device, dim=dim)
+
     def __getattr__(self, name):
         try:
             return super().__getattr__(name)
