@@ -279,7 +279,7 @@ if __name__ == "__main__":
         'epochs': epochs,
         'scheduler': args.scheduler,
         'scheduler_kwargs': {
-            'step_size': int(args.epochs * args.step_size),  # get_stepsize(args.loss),
+            'step_size': max(1, int(args.epochs * args.step_size)),  # get_stepsize(args.loss),
             'gamma': args.lr_decay_rate,
             'milestones': '0.5,0.75',
             'linear_init_lr': 0.001,
