@@ -37,7 +37,7 @@ def process_query(f, indexer: Indexer):
 
     time_string = f'Time taken: {(end_time - start_time):.3f}s\n'
     code_string = "".join(str(np.unpackbits(query_code)).split())[1:-2]
-    code_string = '\n'.join(code_string[i:i + 32] for i in range(0, len(code_string), 32))
+    code_string = '\n'.join(code_string[i:i + 8] for i in range(0, len(code_string), 8))
     return dist, img_paths, code_string, encoded_img_data, img_, time_string
 
 

@@ -45,6 +45,7 @@ class Indexer:
         self.config = json.load(open(self.log_path + '/config.json'))
         self.nbit = self.config['arch_kwargs']['nbit']
         self.nclass = self.config['arch_kwargs']['nclass']
+        assert self.nbit % 8 == 0, 'Number of bit must be multiple of 8'
 
     def load_model(self):
         model_path = os.path.join(self.log_path, 'models', 'best.pth')
