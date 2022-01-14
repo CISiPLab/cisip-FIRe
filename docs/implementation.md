@@ -16,7 +16,7 @@
 |[DPSH](https://cs.nju.edu.cn/lwj/paper/IJCAI16_DPSH.pdf)|[dpsh.yaml](configs/templates/dpsh.yaml)|dpsh|0.599|
 |[DTSH](https://arxiv.org/abs/1612.03900)|[dtsh.yaml](configs/templates/dtsh.yaml)|dtsh|0.608|
 |[GreedyHash](https://papers.nips.cc/paper/2018/hash/13f3cf8c531952d72e5847c4183e6910-Abstract.html)|[greedyhash.yaml](configs/templates/greedyhash.yaml)|greedyhash|0.667|
-|[HashNet](https://openaccess.thecvf.com/content_ICCV_2017/papers/Cao_HashNet_Deep_Learning_ICCV_2017_paper.pdf)|[hashnet.yml](configs/templates/hashnet.yml)|hashnet|0.588|
+|[HashNet](https://openaccess.thecvf.com/content_ICCV_2017/papers/Cao_HashNet_Deep_Learning_ICCV_2017_paper.pdf)|[hashnet.yaml](configs/templates/hashnet.yaml)|hashnet|0.588|
 |[JMLH](https://openaccess.thecvf.com/content_ICCVW_2019/papers/CEFRL/Shen_Embarrassingly_Simple_Binary_Representation_Learning_ICCVW_2019_paper.pdf)|[jmlh.yaml](configs/templates/jmlh.yaml)|jmlh|0.664|
 |[OrthoCos(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthocos.yaml](configs/templates/orthocos.yaml)|orthocos|**0.701**|
 |[OrthoArc(OrthoHash)](https://arxiv.org/abs/2109.14449)|[orthoarc.yaml](configs/templates/orthoarc.yaml)|orthoarc|0.698|
