@@ -66,7 +66,8 @@ def get_web_app(log_path, device='cpu', top_k=10):
                                code=code_string,
                                query_img=encoded_img_data,
                                query_img_full=img_,
-                               time_string=time_string)
+                               time_string=time_string,
+                               extra_data=indexer.get_info())
 
     @app.route('/zip', methods=['POST'])
     def generate_zip():

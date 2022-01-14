@@ -115,3 +115,13 @@ class Indexer:
         query_code = np.packbits(query_code, axis=-1)
         dist, ind = self.query_with_code(query_code)
         return dist, ind, query_code
+
+    def get_info(self):
+        return {
+            'dataset': self.config['dataset'],
+            'number_of_class': self.nclass,
+            'number_of_bits': self.nbit,
+            'device': self.device,
+            'log_path': self.log_path,
+            'loss': self.config['loss']
+        }
