@@ -35,7 +35,7 @@ Please refer to [Changelog](https://fast-image-retrieval.readthedocs.io/en/lates
 #### Supervised
 |Method|Config Template|Loss Name|64bit ImageNet AlexNet (mAP@1K)|
 |---|---|---|---|
-|[ADSH](https://arxiv.org/abs/1707.08325)|[adsh.yaml](configs/templates/adsh.yaml)|adsh|0.645|
+|[ADSH](https://ieeexplore.ieee.org/abstract/document/8825992)|[adsh.yaml](configs/templates/adsh.yaml)|adsh|0.645|
 |[BiHalf](https://arxiv.org/abs/2012.12334)|[bihalf-supervised.yaml](configs/templates/bihalf-supervised.yaml)|bihalf-supervised|0.684|
 |Cross Entropy|[ce.yaml](configs/templates/ce.yaml)|ce|0.434|
 |[CSQ](https://arxiv.org/abs/1908.00347)|[csq.yaml](configs/templates/csq.yaml)|csq|0.686|
