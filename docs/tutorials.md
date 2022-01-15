@@ -205,6 +205,10 @@ r = {
     'new_dataset': 10 # new dataset default R
 }
 ```
+At line `configs.py:281`, add the dataset name to the conditon as follow:
+```python
+if dataset_name in ['imagenet100', 'nuswide', 'new_dataset']:
+```
 In `constants.py:datasets`, add the dataset name, for example:
 ```python
 datasets = {
