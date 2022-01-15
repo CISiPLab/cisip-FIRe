@@ -16,7 +16,7 @@ hash_bias: false
 
 loss_param:
   ce: 1
-  m: 0.2
+  m: 0.3
   s: 8
   quan: 0
   quan_type: cs
@@ -26,4 +26,4 @@ loss_param:
   learn_cent: false
   sign_cent: true
   hash_fc_output: 'bn'
-  cent_init: B
+  cent_init: M
