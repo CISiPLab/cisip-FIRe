@@ -205,6 +205,13 @@ r = {
     'new_dataset': 10 # new dataset default R
 }
 ```
+In `constants.py:datasets`, add the dataset name, for example:
+```python
+datasets = {
+    'class': ['imagenet100', 'new_dataset'],
+    'multiclass': ['nuswide'],
+}
+```
 Lastly, in the another file at line `utils/augmentations.py:19`, in the method `get_train_transform`, specify the augmentation. For example:
 ```python
 'nuswide': [
