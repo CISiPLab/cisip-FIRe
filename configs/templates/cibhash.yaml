@@ -13,3 +13,4 @@ no_aug: True
 loss_param:
   beta: 0.001
   temperature: 0.3
+  hash_layer: 'signhash'

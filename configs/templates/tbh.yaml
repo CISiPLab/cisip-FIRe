@@ -8,3 +8,4 @@ hash_bias: true
 loss_param:
   adv: 1
   rec_method: element
+  hash_layer: 'stochasticbin'

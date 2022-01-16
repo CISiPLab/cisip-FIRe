@@ -10,7 +10,7 @@ class ArchGreedyHash(BaseArch):
     def __init__(self, config, **kwargs):
         super(ArchGreedyHash, self).__init__(config, **kwargs)
 
-        hash_layer = config['loss_param'].get('hash_layer', 'identity')
+        hash_layer = config['loss_param'].get('hash_layer', 'signhash')
 
         self.backbone = get_backbone(backbone=self.backbone_name,
                                      nbit=self.nbit,
