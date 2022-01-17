@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 
@@ -310,6 +311,7 @@ def dataset(config, filename, transform_mode,
                      return_id=return_id,
                      dataset_name_suffix=config['dataset_kwargs'].get('dataset_name_suffix', ''),
                      ratio=data_ratio)
+        logging.info(f'Augmentation for {transform_mode}: {transform.transforms}')
 
     elif dataset_name in ['cifar10', 'cifar100', 'cifar10_II']:  # cifar10/ cifar100
         resizec = 0 if resize == 32 else resize
@@ -335,6 +337,7 @@ def dataset(config, filename, transform_mode,
         if dataset_name in ['cifar10', 'cifar10_II', 'cifar100']:
             d = datasets.cifar(nclass, transform=transform, filename=filename, evaluation_protocol=ep, reset=reset,
                                remove_train_from_db=remove_train_from_db, extra_dataset=extra_dataset)
+            logging.info(f'Augmentation for {transform_mode}: {transform.transforms}')
         else:
             raise NotImplementedError(f"Not implementation for {dataset_name}")
     elif dataset_name in ['gldv2delgembed', 'roxford5kdelgembed', 'rparis6kdelgembed']:

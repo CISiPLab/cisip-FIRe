@@ -18,11 +18,12 @@ def get_transform_from_config(commands):
 def get_train_transform(dataset_name, resize, crop):
     t = {
         'imagenet100': [
-            # transforms.RandomResizedCrop(crop),
-            transforms.Resize(resize),
-            transforms.RandomCrop(crop),
+            transforms.RandomResizedCrop(crop),
             transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=0.05, contrast=0.05),
+            # transforms.Resize(resize),
+            # transforms.RandomCrop(crop),
+            # transforms.RandomHorizontalFlip(),
+            # transforms.ColorJitter(brightness=0.05, contrast=0.05),
         ],
         'nuswide': [
             transforms.Resize(resize),
