@@ -811,3 +811,11 @@ def sop(**kwargs):
 
     d = HashingDataset(f'data/sop{suffix}', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
     return d
+
+
+def food101(**kwargs):
+    transform = kwargs['transform']
+    filename = kwargs['filename']
+
+    d = HashingDataset('data/food-101', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
+    return d

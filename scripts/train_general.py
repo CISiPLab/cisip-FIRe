@@ -579,6 +579,14 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
 
             io.fast_save(db_out, f'{logdir}/outputs/db_out.pth')
             io.fast_save(test_out, f'{logdir}/outputs/test_out.pth')
+            if best < curr_metric:
+                best = curr_metric
+                if config['wandb_enable']:
+                    wandb.run.summary["best_map"] = best
+                if config['save_model']:
+                    io.fast_save(modelsd, f'{logdir}/models/best.pth')
+                    io.fast_save(db_out, f'{logdir}/outputs/db_best.pth')
+                    io.fast_save(test_out, f'{logdir}/outputs/test_best.pth')
             del db_out, test_out
 
             ##### obtain training codes and statistics #####
@@ -611,13 +619,6 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
         save_now = config['save_interval'] != 0 and (ep + 1) % config['save_interval'] == 0
         if save_now and config['save_model']:
             io.fast_save(modelsd, f'{logdir}/models/ep{ep + 1}.pth')
-
-        if best < curr_metric:
-            best = curr_metric
-            if config['wandb_enable']:
-                wandb.run.summary["best_map"] = best
-            if config['save_model']:
-                io.fast_save(modelsd, f'{logdir}/models/best.pth')
 
     ##### training end #####
     modelsd = model.state_dict()

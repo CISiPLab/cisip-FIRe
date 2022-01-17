@@ -55,7 +55,11 @@ def get_train_transform(dataset_name, resize, crop):
         'sop_instance': [
             transforms.RandomResizedCrop(crop),
             transforms.RandomHorizontalFlip()
-        ]
+        ],
+        'food101': [
+            transforms.RandomResizedCrop(crop),
+            transforms.RandomHorizontalFlip()
+        ],
     }[dataset_name]
     return t
 

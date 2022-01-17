@@ -64,7 +64,8 @@ def imagesize(config):
         'roxford5kdelgembed': 0,
         'mirflickr': 256,
         'sop': 256,
-        'sop_instance': 256
+        'sop_instance': 256,
+        'food101': 256
     }[dsname]
 
     return r
@@ -92,7 +93,8 @@ def cropsize(config):
         'rparis6kdelgembed': 0,
         'mirflickr': 224,
         'sop': 224,
-        'sop_instance': 224
+        'sop_instance': 224,
+        'food101': 224
     }[dsname]
 
     return r
@@ -118,7 +120,8 @@ def nclass(config):
         'rparis6kdelgembed': 0,
         'mirflickr': 24,
         'sop': 12,
-        'sop_instance': 22634
+        'sop_instance': 22634,
+        'food101': 101
     }[dsname]
 
     return r
@@ -141,7 +144,8 @@ def R(config):
         'rparis6kdelgembed': 0,
         'mirflickr': 1000,
         'sop': 1000,
-        'sop_instance': 100
+        'sop_instance': 100,
+        'food101': 1000
     }[config['dataset'] + {2: '_2'}.get(config['dataset_kwargs']['evaluation_protocol'], '')]
 
     return r
@@ -275,7 +279,7 @@ def dataset(config, filename, transform_mode,
     extra_dataset = config['dataset_kwargs'].get('extra_dataset', 0)
 
     if dataset_name in ['imagenet100', 'nuswide', 'coco', 'cars', 'landmark',
-                        'roxford5k', 'rparis6k', 'mirflickr', 'sop', 'sop_instance']:
+                        'roxford5k', 'rparis6k', 'mirflickr', 'sop', 'sop_instance', 'food101']:
         norm = 2 if not gpu_mean_transform else 0  # 0 = turn off Normalize
 
         if skip_preprocess:  # will not resize and crop, and no augmentation
@@ -297,7 +301,8 @@ def dataset(config, filename, transform_mode,
             'rparis6k': datasets.rparis6k,
             'mirflickr': datasets.mirflickr,
             'sop': datasets.sop,
-            'sop_instance': datasets.sop_instance
+            'sop_instance': datasets.sop_instance,
+            'food101': datasets.food101
         }[dataset_name]
         d = datafunc(transform=transform,
                      filename=filename,
