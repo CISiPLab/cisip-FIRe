@@ -274,6 +274,7 @@ def dataset(config, filename, transform_mode,
     resize = config['dataset_kwargs'].get('resize', 0)
     crop = config['dataset_kwargs'].get('crop', 0)
     norm = config['dataset_kwargs'].get('norm', 1)
+    use_rand_aug = config['dataset_kwargs']['use_random_augmentation']
     reset = config['dataset_kwargs'].get('reset', False)
     remove_train_from_db = config['dataset_kwargs'].get('remove_train_from_db', False)
     separate_multiclass = config['dataset_kwargs'].get('separate_multiclass', False)
@@ -288,7 +289,7 @@ def dataset(config, filename, transform_mode,
         else:
             if transform_mode == 'train':
                 transform = compose_transform('train', 0, crop, norm,
-                                              get_train_transform(dataset_name, resize, crop))
+                                              get_train_transform(dataset_name, resize, crop, use_rand_aug))
             else:
                 transform = compose_transform('test', resize, crop, norm)
 

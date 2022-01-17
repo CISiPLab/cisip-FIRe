@@ -4,7 +4,7 @@ import kornia.augmentation as K
 import numpy as np
 import torch
 import torch.nn as nn
-from torchvision.transforms import transforms
+from torchvision import transforms
 
 
 def get_transform_from_config(commands):
@@ -15,7 +15,7 @@ def get_transform_from_config(commands):
     return ts
 
 
-def get_train_transform(dataset_name, resize, crop):
+def get_train_transform(dataset_name, resize, crop, use_rand_aug=False):
     t = {
         'imagenet100': [
             transforms.RandomResizedCrop(crop),
@@ -62,6 +62,9 @@ def get_train_transform(dataset_name, resize, crop):
             transforms.RandomHorizontalFlip()
         ],
     }[dataset_name]
+
+    if use_rand_aug:
+        t.append(transforms.RandAugment())
     return t
 
 

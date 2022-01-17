@@ -110,6 +110,7 @@ if __name__ == "__main__":
     parser.add_argument('--distance-func', default='hamming', choices=['hamming', 'cosine', 'euclidean'])
     parser.add_argument('--zero-mean-eval', default=False, action='store_true')
     parser.add_argument('--num-worker', default=-1, type=int, help='number of worker for dataloader')
+    parser.add_argument('--rand-aug', default=False, action='store_true', help='use random augmentation')
     # change: only define at losses
     parser.add_argument('--loss', default='dpn', choices=[name for loss in constants.losses
                                                           for name in constants.losses[loss]])
@@ -266,6 +267,7 @@ if __name__ == "__main__":
             'neighbour_topk': 5,  # for neighbour dataset
             'no_augmentation': args.no_aug,
             'data_folder': data_folder,
+            'use_random_augmentation': args.rand_aug
         },
         'optim': args.optim,
         'optim_kwargs': {
