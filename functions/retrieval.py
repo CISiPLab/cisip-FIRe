@@ -7,7 +7,7 @@ import torch.nn as nn
 
 import configs
 from functions.ternarization import tnt
-from scripts.train_hashing import prepare_model
+from scripts.train_helper import prepare_model
 
 
 def prepare_model_simple(model_dir):
