@@ -13,6 +13,7 @@ from torchvision.datasets.folder import pil_loader, accimage_loader
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
+import configs
 from functions.evaluate_roxf import configdataset, DATASETS
 from functions.mining import SimpleMemoryBank
 from utils.augmentations import GaussianBlurOpenCV
@@ -555,7 +556,8 @@ class NeighbourDatasetWrapper(BaseDataset):
                             num_workers=os.cpu_count())
 
         model.eval()
-        pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+        pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                    disable=configs.disable_tqdm)
         ret_feats = []
 
         for i, (data, labels, index) in enumerate(pbar):

@@ -6,6 +6,8 @@ import torch.nn as nn
 from sklearn.decomposition import PCA
 from tqdm import tqdm
 
+import configs
+
 
 class SHLoss(nn.Module):
     # https://github.com/TreezzZ/SH_PyTorch/blob/master/sh.py
@@ -108,7 +110,8 @@ class SHLoss(nn.Module):
             n_modes = max_mode.sum().item() - len(max_mode) + 1
             modes = torch.ones(n_modes, self.nbit)
             m = 0
-            pbar = tqdm(range(self.nbit), desc='SpecH Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+            pbar = tqdm(range(self.nbit), desc='SpecH Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                        disable=configs.disable_tqdm)
             for i in pbar:
                 modes[m + 1: m + max_mode[i].item(), i] = torch.arange(1, max_mode[i].item()) + 1
                 m = m + max_mode[i] - 1

@@ -20,7 +20,8 @@ def get_codes(model, test_loader, device):
     ret_codes = []
     ret_labels = []
 
-    pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     for i, (data, labels, index) in enumerate(pbar):
         with torch.no_grad():
             data, labels = data.to(device), labels.to(device)

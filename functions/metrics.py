@@ -155,7 +155,8 @@ def compute_mAP_score(dist,
                       return_dist=False):
     APx = []
     Dists = []
-    pbar = tqdm(range(dist.size(0)), desc='Query', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(range(dist.size(0)), desc='Query', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     for i in pbar:
         if onehot:
             label = test_labels[i, :]  # [0,1,0,0] one hot label
@@ -197,7 +198,8 @@ def compute_mAP_score_for_id(dist,
                              return_dist=False):
     APx = []
     Dists = []
-    pbar = tqdm(range(dist.size(0)), desc='Query', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(range(dist.size(0)), desc='Query', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     for i in pbar:
         already_predicted = set()
         test_img_id = test_id[i]
@@ -239,7 +241,8 @@ def compute_distances(db_codes, test_codes, distance_func, device):
         db_codes_loader = configs.dataloader(db_codes_ttd, 32, False, 0, False)
 
         # calculate hamming distance
-        pbar = tqdm(db_codes_loader, desc='Distance', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+        pbar = tqdm(db_codes_loader, desc='Distance', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                    disable=configs.disable_tqdm)
         for i, db_code in enumerate(pbar):
             dist.append(dist_f(test_codes, db_code).cpu())  # move to gpu avoid oom
 
@@ -302,7 +305,8 @@ def calculate_mAP_roxf(db_codes, test_codes, test_dataset,
         db_codes_loader = configs.dataloader(db_codes_ttd, 32, False, 0, False)
 
         # calculate hamming distance
-        pbar = tqdm(db_codes_loader, desc='Distance', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+        pbar = tqdm(db_codes_loader, desc='Distance', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                    disable=configs.disable_tqdm)
         for i, db_code in enumerate(pbar):
             dist.append(dist_f(test_codes, db_code).cpu())  # move to gpu avoid oom
 

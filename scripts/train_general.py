@@ -136,7 +136,8 @@ def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, o
     train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
     criterion.train()
 
-    pbar = tqdm(train_loader, desc='Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(train_loader, desc='Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     batch_timer.tick()
 
     running_times = []
@@ -208,7 +209,8 @@ def test_hashing(model, test_loader, device, loss_name, loss_cfg, onehot, return
     train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
     criterion.eval()
 
-    pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     batchtimer.tick()
 
     running_times = []

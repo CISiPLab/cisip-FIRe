@@ -19,7 +19,8 @@ def obtain_codes(model, config, loader):
 
     model.eval()
 
-    pbar = tqdm(train_loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(train_loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
 
     ret_codes = []
 
@@ -55,7 +56,8 @@ class SemanticStructureDHLoss(nn.Module):
 
         # Histogram distribution
         logging.info('Histogram distribution')
-        pbar = tqdm(range(100), desc='Histogram', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+        pbar = tqdm(range(100), desc='Histogram', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                    disable=configs.disable_tqdm)
         for i in pbar:
             end = start + margin
             temp_matrix = (euc_dis > start) & (euc_dis < end)
@@ -68,7 +70,8 @@ class SemanticStructureDHLoss(nn.Module):
 
         # left = []
         # right = []
-        # pbar = tqdm(range(euc_dis.shape[0]), desc='Separation', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+        # pbar = tqdm(range(euc_dis.shape[0]), desc='Separation', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+        # disable=configs.disable_tqdm)
         # for i in pbar:
         #     if euc_dis[i] <= max_value:
         #         left.append(euc_dis[i])

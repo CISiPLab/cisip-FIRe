@@ -28,6 +28,7 @@ dataset_evaluated_by_id = ['landmark', 'gldv2delgembed']
 embedding_datasets = ['gldv2delgembed', 'roxford5kdelgembed' 'rparis6kdelgembed']
 
 pin_memory = False
+disable_tqdm = False
 
 
 def in_features(dfolder, dataset):

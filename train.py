@@ -139,6 +139,7 @@ if __name__ == "__main__":
     parser.add_argument('--load-from', default='', type=str, help='whether to load from a model')
     parser.add_argument('--benchmark', default=False, action='store_true',
                         help='Benchmark mode, determinitic, and no loss')
+    parser.add_argument('--disable-tqdm', default=False, action='store_true', help='disable tqdm for less verbose stderr')
 
     parser.add_argument('--hash-bias', default=False, action='store_true', help='add bias to hash_fc')
 
@@ -305,7 +306,8 @@ if __name__ == "__main__":
         'save_model': args.save_model,
         'benchmark': args.benchmark,
         'num_worker': args.num_worker,
-        'wandb_enable': args.wandb
+        'wandb_enable': args.wandb,
+        'disable_tqdm': args.disable_tqdm
     }
 
     if args.R == 0:
@@ -324,6 +326,8 @@ if __name__ == "__main__":
     if len(custom_param) != 0:
         logging.info('Custom Param enabled! No overridden will be perform')
         update(config, custom_param)
+
+    configs.disable_tqdm = config['disable_tqdm']
 
     if args.resume:
         resume_dir = args.resume_dir

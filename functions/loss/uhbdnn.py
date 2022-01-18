@@ -16,7 +16,8 @@ def obtain_features(model, config, loader):
 
     model.eval()
 
-    pbar = tqdm(train_loader, desc='Obtain Features', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(train_loader, desc='Obtain Features', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
 
     ret_codes = []
 
