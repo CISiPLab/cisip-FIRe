@@ -107,7 +107,8 @@ def get_dataloader(config,
                    skip_preprocess=False,
                    dataset_type='',
                    full_batchsize=False,
-                   workers=-1):
+                   workers=-1,
+                   seed=-1):
     ds = configs.dataset(config,
                          filename=filename,
                          transform_mode='test' if no_augmentation else 'train',
@@ -138,7 +139,8 @@ def get_dataloader(config,
                                 batch_size,
                                 shuffle=shuffle,
                                 drop_last=drop_last,
-                                workers=workers)
+                                workers=workers,
+                                seed=seed)
     return loader
 
 
@@ -150,7 +152,8 @@ def prepare_dataloader(config,
                        include_train=True,
                        train_drop_last=True,
                        workers=-1,
-                       train_full=False):
+                       train_full=False,
+                       seed=-1):
     """
 
     :param config:
@@ -190,6 +193,7 @@ def prepare_dataloader(config,
     :param train_drop_last:
     :param workers:
     :param train_full:
+    :param seed:
     :return:
     """
     logging.info('Creating Datasets')
@@ -255,7 +259,8 @@ def prepare_dataloader(config,
                                           batch_size,
                                           shuffle=train_shuffle,
                                           drop_last=train_drop_last,
-                                          workers=workers)
+                                          workers=workers,
+                                          seed=seed)
     else:
         train_loader = None
 
@@ -264,12 +269,14 @@ def prepare_dataloader(config,
                                      maxbs,
                                      shuffle=test_shuffle,
                                      drop_last=False,
-                                     workers=workers)
+                                     workers=workers,
+                                     seed=seed)
     db_loader = configs.dataloader(db_dataset,
                                    maxbs,
                                    shuffle=test_shuffle,
                                    drop_last=False,
-                                   workers=workers)
+                                   workers=workers,
+                                   seed=seed)
 
     return train_loader, test_loader, db_loader
 

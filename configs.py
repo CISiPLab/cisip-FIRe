@@ -360,22 +360,48 @@ def dataset(config, filename, transform_mode,
     return d
 
 
-def dataloader(d, bs=256, shuffle=True, workers=-1, drop_last=True, collate_fn=None):
+def dataloader(d, bs=256, shuffle=True, workers=-1, drop_last=True, collate_fn=None, seed=-1):
+    """
+
+    :param d:
+    :param bs:
+    :param shuffle:
+    :param workers:
+    :param drop_last:
+    :param collate_fn:
+    :param seed: random seed for deterministic
+    :return:
+    """
     if workers < 0:
         workers = default_workers
+    if seed != -1:
+        g = torch.Generator()
+        g.manual_seed(seed)
+    else:
+        g = None
+
+    def seed_worker(worker_id):
+        worker_seed = torch.initial_seed() % 2 ** 32
+        np.random.seed(worker_seed)
+        random.seed(worker_seed)
+
     l = DataLoader(d,
                    bs,
                    shuffle,
                    drop_last=drop_last,
                    num_workers=workers,
                    pin_memory=pin_memory,
-                   collate_fn=collate_fn)
+                   collate_fn=collate_fn,
+                   worker_init_fn=seed_worker,
+                   generator=g)
     return l
 
 
 def seeding(seed):
     seed = int(seed)
     if seed != -1:
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)

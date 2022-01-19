@@ -396,7 +396,7 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     train_loader, test_loader, db_loader = prepare_dataloader(config,
                                                               gpu_transform=gpu_transform,
                                                               gpu_mean_transform=gpu_mean_transform,
-                                                              workers=workers)
+                                                              workers=workers, seed=config['seed'])
 
     ##### model preparation #####
     model = prepare_model(config, device)
@@ -603,7 +603,8 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
                                               no_augmentation=True,
                                               skip_preprocess=False,  # do not skip as using test mode
                                               dataset_type='',
-                                              full_batchsize=False)
+                                              full_batchsize=False,
+                                              seed=config['seed'])
                 _, train_out = test_hashing(model, train_loader, device, loss_param['loss'],
                                             loss_param['loss_param'], onehot=onehot,
                                             return_codes=True, return_id=calculate_mAP_using_id,
