@@ -64,7 +64,7 @@ def get_train_transform(dataset_name, resize, crop, use_rand_aug=False):
     }[dataset_name]
 
     if use_rand_aug:
-        t.append(transforms.RandAugment())
+        t.insert(0, transforms.RandAugment())
     return t
 
 
