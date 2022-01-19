@@ -365,6 +365,13 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     logdir = config['logdir']
     assert logdir != '', 'please input logdir'
 
+    if config['wandb_enable']:
+        ## initiaze wandb ##
+        wandb_dir = logdir
+        wandb.init(config=config, dir=wandb_dir)
+        # wandb run name
+        wandb.run.name = logdir.split('logs/')[1]
+
     logging.info(json.dumps(config, indent=2))
 
     os.makedirs(f'{logdir}/models', exist_ok=True)
@@ -398,13 +405,6 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     preprocess(model, config, device)
 
     if config['wandb_enable']:
-        ## initiaze wandb ##
-        wandb_dir = logdir
-        wandb.init(config=config, dir=wandb_dir)
-        # wandb run name
-        wandb.run.name = logdir.split('logs/')[1]
-
-        # os.makedirs(wandb_dir, exist_ok=True)
         wandb.watch(model)
 
     ##### pre-training initilization #####
