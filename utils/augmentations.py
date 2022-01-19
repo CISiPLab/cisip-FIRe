@@ -204,7 +204,7 @@ class GaussianBlurOpenCV(object):
 
 class GaussianBlurKornia(object):
     """
-    Gaussian Blue using Kornia
+    Gaussian Blur using Kornia
     Note that this support gpu operation but required torch.Tensor instead of PIL.Image.
 
     Here are some performance comparison on cpu measured in ms per image.
