@@ -1,5 +1,7 @@
 import numpy as np
 from tqdm import tqdm
+
+import configs
 from functions.hashing import get_hamm_dist
 
 draw_range = [1, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500,
@@ -13,7 +15,7 @@ def pr_curve(rF, qF, rL, qL, draw_range=draw_range):
     Gnd = (np.dot(qL, rL.transpose()) > 0).astype(np.float32)
     Rank = np.argsort(get_hamm_dist(qF, rF))
     P, R = [], []
-    for k in tqdm(draw_range):
+    for k in tqdm(draw_range, disable=configs.disable_tqdm):
         p = np.zeros(n_query)
         r = np.zeros(n_query)
         for it in range(n_query):

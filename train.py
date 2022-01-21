@@ -87,7 +87,7 @@ if __name__ == "__main__":
         configs.default_workers = os.cpu_count()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', help="configuration file *.yml", type=str, required=False, default='')
+    parser.add_argument('--config', help="configuration file *.yml", type=str, required=False, default='configs/templates/orthocos.yaml')
     parser.add_argument('--backbone', default='alexnet', type=str, help='the backbone feature extractor')
     parser.add_argument('--ds', default='imagenet100', choices=[dataset for key in constants.datasets
                                                                 for dataset in constants.datasets[key]], help='dataset')
@@ -110,6 +110,7 @@ if __name__ == "__main__":
     parser.add_argument('--distance-func', default='hamming', choices=['hamming', 'cosine', 'euclidean'])
     parser.add_argument('--zero-mean-eval', default=False, action='store_true')
     parser.add_argument('--num-worker', default=-1, type=int, help='number of worker for dataloader')
+    parser.add_argument('--rand-aug', default=False, action='store_true', help='use random augmentation')
     # change: only define at losses
     parser.add_argument('--loss', default='dpn', choices=[name for loss in constants.losses
                                                           for name in constants.losses[loss]])
@@ -138,6 +139,7 @@ if __name__ == "__main__":
     parser.add_argument('--load-from', default='', type=str, help='whether to load from a model')
     parser.add_argument('--benchmark', default=False, action='store_true',
                         help='Benchmark mode, determinitic, and no loss')
+    parser.add_argument('--disable-tqdm', default=False, action='store_true', help='disable tqdm for less verbose stderr')
 
     parser.add_argument('--hash-bias', default=False, action='store_true', help='add bias to hash_fc')
 
@@ -266,6 +268,7 @@ if __name__ == "__main__":
             'neighbour_topk': 5,  # for neighbour dataset
             'no_augmentation': args.no_aug,
             'data_folder': data_folder,
+            'use_random_augmentation': args.rand_aug
         },
         'optim': args.optim,
         'optim_kwargs': {
@@ -279,7 +282,7 @@ if __name__ == "__main__":
         'epochs': epochs,
         'scheduler': args.scheduler,
         'scheduler_kwargs': {
-            'step_size': int(args.epochs * args.step_size),  # get_stepsize(args.loss),
+            'step_size': max(1, int(args.epochs * args.step_size)),  # get_stepsize(args.loss),
             'gamma': args.lr_decay_rate,
             'milestones': '0.5,0.75',
             'linear_init_lr': 0.001,
@@ -303,7 +306,8 @@ if __name__ == "__main__":
         'save_model': args.save_model,
         'benchmark': args.benchmark,
         'num_worker': args.num_worker,
-        'wandb_enable': args.wandb
+        'wandb_enable': args.wandb,
+        'disable_tqdm': args.disable_tqdm
     }
 
     if args.R == 0:
@@ -320,9 +324,10 @@ if __name__ == "__main__":
 
     config['zero_mean_eval'] = args.zero_mean_eval
     if len(custom_param) != 0:
-        # todo: a better way to load custom param
         logging.info('Custom Param enabled! No overridden will be perform')
         update(config, custom_param)
+
+    configs.disable_tqdm = config['disable_tqdm']
 
     if args.resume:
         resume_dir = args.resume_dir

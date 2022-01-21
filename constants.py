@@ -32,14 +32,14 @@ losses = {
     'unsupervised': ['greedyhash-unsupervised', 'bihalf', 'ssdh'],
     'autoencoder': [],
     'adversarial': ['tbh'],
-    'shallow': ['itq', 'pca', 'lsh', 'sh'],
+    'shallow': ['itq', 'pca', 'lsh', 'sh', 'imh'],
     'contrastive': ['cibhash']
 }
 
 datasets = {
     'class': ['imagenet100', 'nuswide', 'cifar10', 'imagenet50a', 'imagenet50b', 'cars', 'cifar10_II', 'landmark',
               'landmark200', 'landmark500', 'gldv2delgembed', 'roxford5kdelgembed', 'descriptor', 'sop',
-              'sop_instance'],
+              'sop_instance', 'food101'],
     'multiclass': ['nuswide', 'coco', 'mirflickr'],
 }
 
@@ -70,6 +70,7 @@ supported_model = {
     'itq': ['linear'],
     'lsh': ['linear'],
     'sh': ['linear'],
+    'imh': ['linear'],
     'cibhash': ['cibhash'],
     'mihash': ['single', 'dpn']
 }

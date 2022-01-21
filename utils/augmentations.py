@@ -4,7 +4,7 @@ import kornia.augmentation as K
 import numpy as np
 import torch
 import torch.nn as nn
-from torchvision.transforms import transforms
+from torchvision import transforms
 
 
 def get_transform_from_config(commands):
@@ -15,14 +15,15 @@ def get_transform_from_config(commands):
     return ts
 
 
-def get_train_transform(dataset_name, resize, crop):
+def get_train_transform(dataset_name, resize, crop, use_rand_aug=False):
     t = {
         'imagenet100': [
-            # transforms.RandomResizedCrop(crop),
-            transforms.Resize(resize),
-            transforms.RandomCrop(crop),
+            transforms.RandomResizedCrop(crop),
             transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=0.05, contrast=0.05),
+            # transforms.Resize(resize),
+            # transforms.RandomCrop(crop),
+            # transforms.RandomHorizontalFlip(),
+            # transforms.ColorJitter(brightness=0.05, contrast=0.05),
         ],
         'nuswide': [
             transforms.Resize(resize),
@@ -55,8 +56,15 @@ def get_train_transform(dataset_name, resize, crop):
         'sop_instance': [
             transforms.RandomResizedCrop(crop),
             transforms.RandomHorizontalFlip()
-        ]
+        ],
+        'food101': [
+            transforms.RandomResizedCrop(crop),
+            transforms.RandomHorizontalFlip()
+        ],
     }[dataset_name]
+
+    if use_rand_aug:
+        t.insert(0, transforms.RandAugment())
     return t
 
 
@@ -190,5 +198,48 @@ class GaussianBlurOpenCV(object):
         if prob < 0.5:
             sigma = (self.max - self.min) * np.random.random_sample() + self.min
             sample = cv2.GaussianBlur(sample, (self.kernel_size, self.kernel_size), sigma)
+
+        return sample
+
+
+class GaussianBlurKornia(object):
+    """
+    Gaussian Blur using Kornia
+    Note that this support gpu operation but required torch.Tensor instead of PIL.Image.
+
+    Here are some performance comparison on cpu measured in ms per image.
+    ----------------------------
+    |Image size |Kornia |OpenCV |
+    -----------------------------
+    |224        |10.2   |11.4   |
+    |512        |17.1   |16.1   |
+    |1024       |41.2   |30.1   |
+    |2048       |179    |92.5   |
+    -----------------------------
+
+    Examples:
+        >>> transform = transforms.Compose([transforms.Resize(224), \
+                                            transforms.ToTensor(), \
+                                            GaussianBlurKornia(kernel_size=3),])
+        >>> transform(img)
+    """
+    # Implements Gaussian blur as described in the SimCLR paper
+    def __init__(self, kernel_size, min=0.1, max=2.0):
+        self.min = min
+        self.max = max
+        # kernel size is set to be 10% of the image height/width
+        self.kernel_size = kernel_size
+
+    def __call__(self, sample: torch.Tensor):
+        sample = sample.unsqueeze(0)
+
+        # blur the image with a 50% chance
+        prob = np.random.random_sample()
+
+        if prob < 0.5:
+            sigma = (self.max - self.min) * np.random.random_sample() + self.min
+            sample = kornia.filters.gaussian_blur2d(sample,
+                                                    (self.kernel_size, self.kernel_size),
+                                                    (sigma, sigma))
 
         return sample

@@ -17,6 +17,7 @@ from functions.loss.dpsh import DPSHLoss
 from functions.loss.dtsh import DTSHLoss
 from functions.loss.greedyhash import GreedyHashLoss, GreedyHashUnsupervisedLoss
 from functions.loss.hashnet import HashNetLoss
+from functions.loss.imh import IMHLoss
 from functions.loss.itq import ITQLoss
 from functions.loss.jmlh import JMLH
 from functions.loss.lsh import LSHLoss
@@ -59,7 +60,8 @@ def get_loss(loss_name, **cfg):
         'pca': PCALoss,
         'lsh': LSHLoss,
         'sh': SHLoss,
-        'cibhash': CIBHashLoss
+        'cibhash': CIBHashLoss,
+        'imh': IMHLoss
     }
     if loss_name not in loss:
         raise NotImplementedError(f'not implemented for {loss_name}')
@@ -105,7 +107,8 @@ def get_dataloader(config,
                    skip_preprocess=False,
                    dataset_type='',
                    full_batchsize=False,
-                   workers=-1):
+                   workers=-1,
+                   seed=-1):
     ds = configs.dataset(config,
                          filename=filename,
                          transform_mode='test' if no_augmentation else 'train',
@@ -136,7 +139,8 @@ def get_dataloader(config,
                                 batch_size,
                                 shuffle=shuffle,
                                 drop_last=drop_last,
-                                workers=workers)
+                                workers=workers,
+                                seed=seed)
     return loader
 
 
@@ -148,7 +152,8 @@ def prepare_dataloader(config,
                        include_train=True,
                        train_drop_last=True,
                        workers=-1,
-                       train_full=False):
+                       train_full=False,
+                       seed=-1):
     """
 
     :param config:
@@ -188,6 +193,7 @@ def prepare_dataloader(config,
     :param train_drop_last:
     :param workers:
     :param train_full:
+    :param seed:
     :return:
     """
     logging.info('Creating Datasets')
@@ -253,7 +259,8 @@ def prepare_dataloader(config,
                                           batch_size,
                                           shuffle=train_shuffle,
                                           drop_last=train_drop_last,
-                                          workers=workers)
+                                          workers=workers,
+                                          seed=seed)
     else:
         train_loader = None
 
@@ -262,17 +269,19 @@ def prepare_dataloader(config,
                                      maxbs,
                                      shuffle=test_shuffle,
                                      drop_last=False,
-                                     workers=workers)
+                                     workers=workers,
+                                     seed=seed)
     db_loader = configs.dataloader(db_dataset,
                                    maxbs,
                                    shuffle=test_shuffle,
                                    drop_last=False,
-                                   workers=workers)
+                                   workers=workers,
+                                   seed=seed)
 
     return train_loader, test_loader, db_loader
 
 
-def prepare_model(config, device):
+def prepare_model(config, device: torch.device):
     """
 
     :param config:
@@ -296,8 +305,21 @@ def prepare_model(config, device):
     """
     logging.info('Creating Model')
     model = configs.arch(config)
-    if torch.cuda.device_count() > 1 and 'cuda:' not in config['device']:  # cuda device is not specified, use all
-        logging.info('Using DataParallel Model')
-        model = DataParallelPassthrough(model)
+    # if (torch.cuda.device_count() > 1) and (config['device'] == 'cuda'):  # cuda device is not specified, use all
+    #     logging.info('Using DataParallel Model')
+    #     model = DataParallelPassthrough(model)
+
+    if (torch.cuda.device_count() == 0) or (device.type == 'cpu'):  # cpu
+        device_ids = []
+        is_cpu = True
+    elif (torch.cuda.device_count() > 0) and device.index is not None:  # select gpu
+        device_ids = [device.index]
+        is_cpu = False
+    else:  # all gpu
+        device_ids = None
+        is_cpu = False
+    logging.info(f'Using DataParallel Model. Device id = {device_ids}. is_cpu={is_cpu} device={device}')
+    model = DataParallelPassthrough(model, device_ids=device_ids, is_cpu=is_cpu)
+
     model = model.to(device)
     return model

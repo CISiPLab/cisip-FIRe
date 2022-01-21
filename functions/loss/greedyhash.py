@@ -22,7 +22,11 @@ class GreedyHashLoss(nn.Module):
         onehot: whether labels is onehot
         """
         if self.multiclass:
-            loss1 = F.binary_cross_entropy(torch.sigmoid(logits), labels.float())
+            # loss1 = F.binary_cross_entropy(torch.sigmoid(logits), labels.float()) # not using, not working
+            log_logits = F.log_softmax(logits, dim=1)
+            labels_scaled = labels / labels.sum(dim=1, keepdim=True)
+            loss1 = - (labels_scaled * log_logits).sum(dim=1)
+            loss1 = loss1.mean()
         else:
             if onehot:
                 labels = labels.argmax(1)

@@ -3,6 +3,6 @@ loss: ssdh
 
 # loss params
 loss_param:
-  hash_fc_output: tanh
   alpha: 2
   beta: 2
+  hash_layer: 'tanh'

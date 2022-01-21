@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 
@@ -27,6 +28,7 @@ dataset_evaluated_by_id = ['landmark', 'gldv2delgembed']
 embedding_datasets = ['gldv2delgembed', 'roxford5kdelgembed' 'rparis6kdelgembed']
 
 pin_memory = False
+disable_tqdm = False
 
 
 def in_features(dfolder, dataset):
@@ -64,7 +66,8 @@ def imagesize(config):
         'roxford5kdelgembed': 0,
         'mirflickr': 256,
         'sop': 256,
-        'sop_instance': 256
+        'sop_instance': 256,
+        'food101': 256
     }[dsname]
 
     return r
@@ -92,7 +95,8 @@ def cropsize(config):
         'rparis6kdelgembed': 0,
         'mirflickr': 224,
         'sop': 224,
-        'sop_instance': 224
+        'sop_instance': 224,
+        'food101': 224
     }[dsname]
 
     return r
@@ -118,7 +122,8 @@ def nclass(config):
         'rparis6kdelgembed': 0,
         'mirflickr': 24,
         'sop': 12,
-        'sop_instance': 22634
+        'sop_instance': 22634,
+        'food101': 101
     }[dsname]
 
     return r
@@ -141,7 +146,8 @@ def R(config):
         'rparis6kdelgembed': 0,
         'mirflickr': 1000,
         'sop': 1000,
-        'sop_instance': 100
+        'sop_instance': 100,
+        'food101': 1000
     }[config['dataset'] + {2: '_2'}.get(config['dataset_kwargs']['evaluation_protocol'], '')]
 
     return r
@@ -269,13 +275,14 @@ def dataset(config, filename, transform_mode,
     resize = config['dataset_kwargs'].get('resize', 0)
     crop = config['dataset_kwargs'].get('crop', 0)
     norm = config['dataset_kwargs'].get('norm', 1)
+    use_rand_aug = config['dataset_kwargs']['use_random_augmentation']
     reset = config['dataset_kwargs'].get('reset', False)
     remove_train_from_db = config['dataset_kwargs'].get('remove_train_from_db', False)
     separate_multiclass = config['dataset_kwargs'].get('separate_multiclass', False)
     extra_dataset = config['dataset_kwargs'].get('extra_dataset', 0)
 
     if dataset_name in ['imagenet100', 'nuswide', 'coco', 'cars', 'landmark',
-                        'roxford5k', 'rparis6k', 'mirflickr', 'sop', 'sop_instance']:
+                        'roxford5k', 'rparis6k', 'mirflickr', 'sop', 'sop_instance', 'food101']:
         norm = 2 if not gpu_mean_transform else 0  # 0 = turn off Normalize
 
         if skip_preprocess:  # will not resize and crop, and no augmentation
@@ -283,7 +290,7 @@ def dataset(config, filename, transform_mode,
         else:
             if transform_mode == 'train':
                 transform = compose_transform('train', 0, crop, norm,
-                                              get_train_transform(dataset_name, resize, crop))
+                                              get_train_transform(dataset_name, resize, crop, use_rand_aug))
             else:
                 transform = compose_transform('test', resize, crop, norm)
 
@@ -297,7 +304,8 @@ def dataset(config, filename, transform_mode,
             'rparis6k': datasets.rparis6k,
             'mirflickr': datasets.mirflickr,
             'sop': datasets.sop,
-            'sop_instance': datasets.sop_instance
+            'sop_instance': datasets.sop_instance,
+            'food101': datasets.food101
         }[dataset_name]
         d = datafunc(transform=transform,
                      filename=filename,
@@ -305,6 +313,7 @@ def dataset(config, filename, transform_mode,
                      return_id=return_id,
                      dataset_name_suffix=config['dataset_kwargs'].get('dataset_name_suffix', ''),
                      ratio=data_ratio)
+        logging.info(f'Augmentation for {transform_mode}: {transform.transforms}')
 
     elif dataset_name in ['cifar10', 'cifar100', 'cifar10_II']:  # cifar10/ cifar100
         resizec = 0 if resize == 32 else resize
@@ -330,6 +339,8 @@ def dataset(config, filename, transform_mode,
         if dataset_name in ['cifar10', 'cifar10_II', 'cifar100']:
             d = datasets.cifar(nclass, transform=transform, filename=filename, evaluation_protocol=ep, reset=reset,
                                remove_train_from_db=remove_train_from_db, extra_dataset=extra_dataset)
+            logging.info(f'Number of data: {len(d.data)}')
+            logging.info(f'Augmentation for {transform_mode}: {transform.transforms}')
         else:
             raise NotImplementedError(f"Not implementation for {dataset_name}")
     elif dataset_name in ['gldv2delgembed', 'roxford5kdelgembed', 'rparis6kdelgembed']:
@@ -350,22 +361,48 @@ def dataset(config, filename, transform_mode,
     return d
 
 
-def dataloader(d, bs=256, shuffle=True, workers=-1, drop_last=True, collate_fn=None):
+def dataloader(d, bs=256, shuffle=True, workers=-1, drop_last=True, collate_fn=None, seed=-1):
+    """
+
+    :param d:
+    :param bs:
+    :param shuffle:
+    :param workers:
+    :param drop_last:
+    :param collate_fn:
+    :param seed: random seed for deterministic
+    :return:
+    """
     if workers < 0:
         workers = default_workers
+    if seed != -1:
+        g = torch.Generator()
+        g.manual_seed(seed)
+    else:
+        g = None
+
+    def seed_worker(worker_id):
+        worker_seed = torch.initial_seed() % 2 ** 32
+        np.random.seed(worker_seed)
+        random.seed(worker_seed)
+
     l = DataLoader(d,
                    bs,
                    shuffle,
                    drop_last=drop_last,
                    num_workers=workers,
                    pin_memory=pin_memory,
-                   collate_fn=collate_fn)
+                   collate_fn=collate_fn,
+                   worker_init_fn=seed_worker,
+                   generator=g)
     return l
 
 
 def seeding(seed):
     seed = int(seed)
     if seed != -1:
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)

@@ -136,7 +136,8 @@ def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, o
     train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
     criterion.train()
 
-    pbar = tqdm(train_loader, desc='Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(train_loader, desc='Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     batch_timer.tick()
 
     running_times = []
@@ -208,7 +209,8 @@ def test_hashing(model, test_loader, device, loss_name, loss_cfg, onehot, return
     train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
     criterion.eval()
 
-    pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
     batchtimer.tick()
 
     running_times = []
@@ -363,6 +365,13 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     logdir = config['logdir']
     assert logdir != '', 'please input logdir'
 
+    if config['wandb_enable']:
+        ## initiaze wandb ##
+        wandb_dir = logdir
+        wandb.init(config=config, dir=wandb_dir)
+        # wandb run name
+        wandb.run.name = logdir.split('logs/')[1]
+
     logging.info(json.dumps(config, indent=2))
 
     os.makedirs(f'{logdir}/models', exist_ok=True)
@@ -387,7 +396,7 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     train_loader, test_loader, db_loader = prepare_dataloader(config,
                                                               gpu_transform=gpu_transform,
                                                               gpu_mean_transform=gpu_mean_transform,
-                                                              workers=workers)
+                                                              workers=workers, seed=config['seed'])
 
     ##### model preparation #####
     model = prepare_model(config, device)
@@ -396,13 +405,6 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
     preprocess(model, config, device)
 
     if config['wandb_enable']:
-        ## initiaze wandb ##
-        wandb_dir = logdir
-        wandb.init(config=config, dir=wandb_dir)
-        # wandb run name
-        wandb.run.name = logdir.split('logs/')[1]
-
-        # os.makedirs(wandb_dir, exist_ok=True)
         wandb.watch(model)
 
     ##### pre-training initilization #####
@@ -579,6 +581,14 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
 
             io.fast_save(db_out, f'{logdir}/outputs/db_out.pth')
             io.fast_save(test_out, f'{logdir}/outputs/test_out.pth')
+            if best < curr_metric:
+                best = curr_metric
+                if config['wandb_enable']:
+                    wandb.run.summary["best_map"] = best
+                if config['save_model']:
+                    io.fast_save(modelsd, f'{logdir}/models/best.pth')
+                    io.fast_save(db_out, f'{logdir}/outputs/db_best.pth')
+                    io.fast_save(test_out, f'{logdir}/outputs/test_best.pth')
             del db_out, test_out
 
             ##### obtain training codes and statistics #####
@@ -593,7 +603,8 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
                                               no_augmentation=True,
                                               skip_preprocess=False,  # do not skip as using test mode
                                               dataset_type='',
-                                              full_batchsize=False)
+                                              full_batchsize=False,
+                                              seed=config['seed'])
                 _, train_out = test_hashing(model, train_loader, device, loss_param['loss'],
                                             loss_param['loss_param'], onehot=onehot,
                                             return_codes=True, return_id=calculate_mAP_using_id,
@@ -611,12 +622,6 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
         save_now = config['save_interval'] != 0 and (ep + 1) % config['save_interval'] == 0
         if save_now and config['save_model']:
             io.fast_save(modelsd, f'{logdir}/models/ep{ep + 1}.pth')
-
-        if best < curr_metric:
-            best = curr_metric
-            wandb.run.summary["best_map"] = best
-            if config['save_model']:
-                io.fast_save(modelsd, f'{logdir}/models/best.pth')
 
     ##### training end #####
     modelsd = model.state_dict()

@@ -14,7 +14,8 @@ from utils import io
 
 def obtain_codes(criterion, loader, device, return_id=False):
     criterion.eval()
-    pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+    pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                disable=configs.disable_tqdm)
 
     ret_codes = []
     ret_labels = []

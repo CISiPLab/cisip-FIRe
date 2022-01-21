@@ -35,6 +35,7 @@ Welcome to Fast Image Retrieval's documentation!
    :caption: Misc
 
    misc.md
+   arm.md
 
 
 

@@ -10,9 +10,6 @@ backbone: alexnet
 optim: adam
 epochs: &epochs 100
 eval: 10
-dataset_name_suffix: _resize
-db_skip_preprocess: True
-test_skip_preprocess: True
 # loss params
 loss_param:
   alpha: 1

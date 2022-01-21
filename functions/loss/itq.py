@@ -5,6 +5,8 @@ import torch.nn as nn
 from sklearn.decomposition import PCA
 from tqdm import tqdm
 
+import configs
+
 
 class ITQLoss(nn.Module):
     def __init__(self, nbit, max_iters=3, **kwargs):
@@ -47,7 +49,8 @@ class ITQLoss(nn.Module):
             v = torch.from_numpy(x_pca).to(device)
 
             # Training
-            pbar = tqdm(range(self.max_iters), desc='ITQ Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+            pbar = tqdm(range(self.max_iters), desc='ITQ Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                        disable=configs.disable_tqdm)
             for i in pbar:
                 v_tilde = v @ R
                 b = v_tilde.sign()

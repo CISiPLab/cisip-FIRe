@@ -1,5 +1,6 @@
 import time
 
+from PIL import Image
 from torch.nn import DataParallel
 
 
@@ -56,6 +57,16 @@ def to_list(v):
 
 
 class DataParallelPassthrough(DataParallel):
+    def __init__(self, module, device_ids=None, output_device=None, dim=0, is_cpu=False):
+        super(DataParallel, self).__init__()
+        if is_cpu:
+            self.module = module
+            self.device_ids = []
+            return
+        else:
+            super(DataParallelPassthrough, self).__init__(module, device_ids=device_ids,
+                                                          output_device=output_device, dim=dim)
+
     def __getattr__(self, name):
         try:
             return super().__getattr__(name)
@@ -90,6 +101,11 @@ def dot_dict(d):
             outd[k] = v
 
     return _dot_dict(outd)
+
+
+def pil_loader(f) -> Image.Image:
+    img = Image.open(f)
+    return img.convert('RGB')
 
 
 if __name__ == '__main__':

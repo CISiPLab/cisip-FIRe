@@ -1,5 +1,6 @@
 import logging
 import os
+from abc import ABC
 from typing import Tuple, Any
 
 import numpy as np
@@ -12,12 +13,18 @@ from torchvision.datasets.folder import pil_loader, accimage_loader
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
+import configs
 from functions.evaluate_roxf import configdataset, DATASETS
 from functions.mining import SimpleMemoryBank
 from utils.augmentations import GaussianBlurOpenCV
 
 
-class HashingDataset(Dataset):
+class BaseDataset(Dataset, ABC):
+    def get_img_paths(self):
+        raise NotImplementedError
+
+
+class HashingDataset(BaseDataset):
     def __init__(self, root,
                  transform=None,
                  target_transform=None,
@@ -122,8 +129,11 @@ class HashingDataset(Dataset):
     def __len__(self):
         return len(self.train_data)
 
+    def get_img_paths(self):
+        return self.train_data
 
-class IndexDatasetWrapper(Dataset):
+
+class IndexDatasetWrapper(BaseDataset):
     def __init__(self, ds) -> None:
         super(Dataset, self).__init__()
         self.__dict__['ds'] = ds
@@ -149,6 +159,9 @@ class IndexDatasetWrapper(Dataset):
     def __len__(self):
         return len(self.ds)
 
+    def get_img_paths(self):
+        return self.ds.get_img_paths()
+
 
 class Denormalize(object):
     def __init__(self, mean, std):
@@ -161,7 +174,7 @@ class Denormalize(object):
         return tensor
 
 
-class InstanceDiscriminationDataset(Dataset):
+class InstanceDiscriminationDataset(BaseDataset):
     def augment_image(self, img):
         # if use this, please run script with --no-aug and --gpu-mean-transform
         return self.transform(self.to_pil(img))
@@ -259,8 +272,11 @@ class InstanceDiscriminationDataset(Dataset):
     def __len__(self):
         return len(self.ds)
 
+    def get_img_paths(self):
+        return self.ds.get_img_paths()
 
-class RotationDataset(Dataset):
+
+class RotationDataset(BaseDataset):
 
     @staticmethod
     def rotate_img(img, rot):
@@ -311,8 +327,11 @@ class RotationDataset(Dataset):
     def __len__(self):
         return len(self.ds)
 
+    def get_img_paths(self):
+        return self.ds.get_img_paths()
 
-class LandmarkDataset(Dataset):
+
+class LandmarkDataset(BaseDataset):
     def __init__(self, root,
                  transform=None,
                  target_transform=None,
@@ -366,8 +385,11 @@ class LandmarkDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
+    def get_img_paths(self):
+        return self.df['path'].to_numpy()
 
-class SingleIDDataset(Dataset):
+
+class SingleIDDataset(BaseDataset):
     """Dataset with only single class ID
     To be merge with Landmark"""
 
@@ -421,8 +443,11 @@ class SingleIDDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
+    def get_img_paths(self):
+        return self.df['path'].to_numpy()
 
-class ROxfordParisDataset(Dataset):
+
+class ROxfordParisDataset(BaseDataset):
     def __init__(self,
                  dataset='roxford5k',
                  filename='test.txt',
@@ -459,8 +484,11 @@ class ROxfordParisDataset(Dataset):
         elif self.set_name == 'database.txt':
             return self.cfg['n']
 
+    def get_img_paths(self):
+        raise NotImplementedError('Not supported.')
 
-class DescriptorDataset(Dataset):
+
+class DescriptorDataset(BaseDataset):
     def __init__(self, root, filename, ratio=1):
         self.data_dict = torch.load(os.path.join(root, filename), map_location=torch.device('cpu'))
         self.filename = filename
@@ -487,8 +515,11 @@ class DescriptorDataset(Dataset):
     def __len__(self):
         return len(self.data_dict['codes'])
 
+    def get_img_paths(self):
+        raise NotImplementedError('Not supported for descriptor dataset. Please try usual Image Dataset if you want to get all image paths.')
 
-class EmbeddingDataset(Dataset):
+
+class EmbeddingDataset(BaseDataset):
     def __init__(self, root,
                  filename='train.txt'):
         self.data_dict = torch.load(os.path.join(root, filename), map_location=torch.device('cpu'))
@@ -509,8 +540,11 @@ class EmbeddingDataset(Dataset):
     def __len__(self):
         return len(self.data_dict['id'])
 
+    def get_img_paths(self):
+        raise NotImplementedError('Not supported for descriptor dataset. Please try usual Image Dataset if you want to get all image paths.')
 
-class NeighbourDatasetWrapper(Dataset):
+
+class NeighbourDatasetWrapper(BaseDataset):
     def __init__(self, ds, model, config) -> None:
         super(Dataset, self).__init__()
         self.ds = ds
@@ -522,7 +556,8 @@ class NeighbourDatasetWrapper(Dataset):
                             num_workers=os.cpu_count())
 
         model.eval()
-        pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}')
+        pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
+                    disable=configs.disable_tqdm)
         ret_feats = []
 
         for i, (data, labels, index) in enumerate(pbar):
@@ -558,6 +593,9 @@ class NeighbourDatasetWrapper(Dataset):
     def __len__(self):
         return len(self.ds)
 
+    def get_img_paths(self):
+        return self.ds.get_img_paths()
+
 
 def one_hot(nclass):
     def f(index):
@@ -578,7 +616,9 @@ def cifar(nclass, **kwargs):
                    transform=transform, target_transform=one_hot(int(nclass)),
                    train=True, download=True)
     traind = IndexDatasetWrapper(traind)
-    testd = CIFAR(f'data/cifar{nclass}', train=False, download=True)
+    testd = CIFAR(f'data/cifar{nclass}',
+                  transform=transform, target_transform=one_hot(int(nclass)),
+                  train=False, download=True)
     testd = IndexDatasetWrapper(testd)
 
     if ep == 2:  # using orig train and test
@@ -774,4 +814,12 @@ def sop(**kwargs):
     suffix = kwargs.get('dataset_name_suffix', '')
 
     d = HashingDataset(f'data/sop{suffix}', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
+    return d
+
+
+def food101(**kwargs):
+    transform = kwargs['transform']
+    filename = kwargs['filename']
+
+    d = HashingDataset('data/food-101', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
     return d
