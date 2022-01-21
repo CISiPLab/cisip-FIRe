@@ -616,7 +616,9 @@ def cifar(nclass, **kwargs):
                    transform=transform, target_transform=one_hot(int(nclass)),
                    train=True, download=True)
     traind = IndexDatasetWrapper(traind)
-    testd = CIFAR(f'data/cifar{nclass}', train=False, download=True)
+    testd = CIFAR(f'data/cifar{nclass}',
+                  transform=transform, target_transform=one_hot(int(nclass)),
+                  train=False, download=True)
     testd = IndexDatasetWrapper(testd)
 
     if ep == 2:  # using orig train and test

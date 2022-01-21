@@ -339,6 +339,7 @@ def dataset(config, filename, transform_mode,
         if dataset_name in ['cifar10', 'cifar10_II', 'cifar100']:
             d = datasets.cifar(nclass, transform=transform, filename=filename, evaluation_protocol=ep, reset=reset,
                                remove_train_from_db=remove_train_from_db, extra_dataset=extra_dataset)
+            logging.info(f'Number of data: {len(d.data)}')
             logging.info(f'Augmentation for {transform_mode}: {transform.transforms}')
         else:
             raise NotImplementedError(f"Not implementation for {dataset_name}")

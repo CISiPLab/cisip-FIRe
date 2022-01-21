@@ -4,6 +4,7 @@ from models.backbone.alexnet import AlexNetBackbone
 from models.backbone.linear import LinearBackbone
 from models.backbone.resnet import ResNetBackbone
 from models.backbone.vgg import VGGBackbone
+from models.backbone.vit import ViTBackbone
 from models.layers.activation import SignHashLayer, StochasticBinaryLayer
 from models.layers.bihalf import BiHalfLayer
 from models.layers.zm import MeanOnlyBatchNorm
@@ -36,6 +37,15 @@ def get_backbone(backbone, nbit, nclass, pretrained, freeze_weight, **kwargs):
                            vgg_size='vgg16bn', freeze_weight=freeze_weight, **kwargs)
     elif backbone == 'linear':
         return LinearBackbone(nclass=nclass, nbit=nbit, **kwargs)
+    elif backbone == 'vit':
+        return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_base_patch16_224',
+                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'vittiny':
+        return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_tiny_patch16_224',
+                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'vitsmall':
+        return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_small_patch16_224',
+                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
     else:
         raise NotImplementedError('The backbone not implemented.')
 
