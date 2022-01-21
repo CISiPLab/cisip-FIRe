@@ -3,6 +3,7 @@ import torch.nn as nn
 from models.backbone.alexnet import AlexNetBackbone
 from models.backbone.linear import LinearBackbone
 from models.backbone.resnet import ResNetBackbone
+from models.backbone.swinvit import SwinTransformerBackbone
 from models.backbone.vgg import VGGBackbone
 from models.backbone.vit import ViTBackbone
 from models.layers.activation import SignHashLayer, StochasticBinaryLayer
@@ -39,13 +40,22 @@ def get_backbone(backbone, nbit, nclass, pretrained, freeze_weight, **kwargs):
         return LinearBackbone(nclass=nclass, nbit=nbit, **kwargs)
     elif backbone == 'vit':
         return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_base_patch16_224',
-                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+                           pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
     elif backbone == 'vittiny':
         return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_tiny_patch16_224',
-                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+                           pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
     elif backbone == 'vitsmall':
         return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_small_patch16_224',
-                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+                           pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'swin':
+        return SwinTransformerBackbone(nbit=nbit, nclass=nclass, vit_name='swin_base_patch4_window7_224',
+                                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'swintiny':
+        return SwinTransformerBackbone(nbit=nbit, nclass=nclass, vit_name='swin_tiny_patch4_window7_224',
+                                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'swinsmall':
+        return SwinTransformerBackbone(nbit=nbit, nclass=nclass, vit_name='swin_small_patch4_window7_224',
+                                       pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
     else:
         raise NotImplementedError('The backbone not implemented.')
 
