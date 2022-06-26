@@ -579,8 +579,9 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
                 wandb_test.pop("ep")
                 wandb.log(wandb_test, step=res['ep'])
 
-            io.fast_save(db_out, f'{logdir}/outputs/db_out.pth')
-            io.fast_save(test_out, f'{logdir}/outputs/test_out.pth')
+            if not config['save_best_model_only']:
+                io.fast_save(db_out, f'{logdir}/outputs/db_out.pth')
+                io.fast_save(test_out, f'{logdir}/outputs/test_out.pth')
             if best < curr_metric:
                 best = curr_metric
                 if config['wandb_enable']:
@@ -625,7 +626,7 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
 
     ##### training end #####
     modelsd = model.state_dict()
-    if config['save_model']:
+    if config['save_model'] and not config['save_best_model_only']:
         io.fast_save(modelsd, f'{logdir}/models/last.pth')
 
     total_timer.toc()

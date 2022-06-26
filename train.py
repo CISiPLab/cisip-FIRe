@@ -136,6 +136,7 @@ if __name__ == "__main__":
     parser.add_argument('--resume-dir', default='', type=str, help='resume dir')
     parser.add_argument('--enable-checkpoint', default=False, action='store_true')
     parser.add_argument('--save-model', default=False, action='store_true')
+    parser.add_argument('--save-best-model-only', default=False, action='store_true')
     parser.add_argument('--load-from', default='', type=str, help='whether to load from a model')
     parser.add_argument('--benchmark', default=False, action='store_true',
                         help='Benchmark mode, determinitic, and no loss')
@@ -304,6 +305,7 @@ if __name__ == "__main__":
         'save_checkpoint': args.enable_checkpoint,
         'load_from': args.load_from,
         'save_model': args.save_model,
+        'save_best_model_only': args.save_best_model_only,
         'benchmark': args.benchmark,
         'num_worker': args.num_worker,
         'wandb_enable': args.wandb,
