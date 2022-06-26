@@ -32,7 +32,7 @@ def obtain_codes(model, config, loader):
 
             x, code_logits, b = model(data)[:3]
 
-            ret_codes.append(code_logits.cpu())
+            ret_codes.append(x.cpu())
 
     return torch.cat(ret_codes), device
 
@@ -41,11 +41,11 @@ class SemanticStructureDHLoss(nn.Module):
     # https://github.com/yangerkun/IJCAI2018_SSDH/blob/master/main.py.
 
     def prepare_dataset_from_model(self, model, config, train_loader, test_loader, db_loader):
-        train_codes, device = obtain_codes(model, config, train_loader)
+        train_feats, device = obtain_codes(model, config, train_loader)
 
         # Calculate cosine distance
         logging.info('Calculate cosine distance')
-        euc_ = pdist(train_codes.cpu().numpy(), 'cosine')
+        euc_ = pdist(train_feats.cpu().numpy(), 'cosine')
         euc_dis = squareform(euc_)
         orig_euc_dis = euc_dis
         start = -0.00000001
