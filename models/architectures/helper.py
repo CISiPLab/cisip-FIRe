@@ -2,6 +2,7 @@ import torch.nn as nn
 
 from models.backbone.alexnet import AlexNetBackbone
 from models.backbone.linear import LinearBackbone
+from models.backbone.mlp import MLPBackbone
 from models.backbone.resnet import ResNetBackbone
 from models.backbone.swinvit import SwinTransformerBackbone
 from models.backbone.vgg import VGGBackbone
@@ -38,6 +39,8 @@ def get_backbone(backbone, nbit, nclass, pretrained, freeze_weight, **kwargs):
                            vgg_size='vgg16bn', freeze_weight=freeze_weight, **kwargs)
     elif backbone == 'linear':
         return LinearBackbone(nclass=nclass, nbit=nbit, **kwargs)
+    elif backbone == 'mlp':
+        return MLPBackbone(nclass=nclass, nbit=nbit, **kwargs)
     elif backbone == 'vit':
         return ViTBackbone(nbit=nbit, nclass=nclass, vit_name='vit_base_patch16_224',
                            pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
