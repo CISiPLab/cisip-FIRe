@@ -588,8 +588,9 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
                     wandb.run.summary["best_map"] = best
                 if config['save_model']:
                     io.fast_save(modelsd, f'{logdir}/models/best.pth')
-                    io.fast_save(db_out, f'{logdir}/outputs/db_best.pth')
-                    io.fast_save(test_out, f'{logdir}/outputs/test_best.pth')
+                    if not config['discard_hash_outputs']:
+                        io.fast_save(db_out, f'{logdir}/outputs/db_best.pth')
+                        io.fast_save(test_out, f'{logdir}/outputs/test_best.pth')
             del db_out, test_out
 
             ##### obtain training codes and statistics #####
