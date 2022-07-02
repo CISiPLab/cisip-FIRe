@@ -457,6 +457,12 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
         ground_truth_path = os.path.join(test_loader.dataset.root, 'ground_truth.csv')
         ground_truth = pd.read_csv(ground_truth_path)  # id = index id, images = images id in database
 
+    # update criterion as non-onehot mode, for pairwise methods
+    if method in ['pairwise']:
+        if not onehot:
+            logging.info("Not a onehot label dataset")
+            criterion.label_not_onehot = True
+
     ##### resume training #####
     if config['start_epoch_from'] != 0:
         criterion, train_history, test_history = resume_training(config, logdir,
