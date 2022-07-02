@@ -133,8 +133,7 @@ def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, o
         criterion = train_helper.get_loss(loss_name, **loss_cfg)
     meters = defaultdict(AverageMeter)
 
-    train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name,
-                                  method=method, onehot=onehot)
+    train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
     criterion.train()
 
     pbar = tqdm(train_loader, desc='Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
