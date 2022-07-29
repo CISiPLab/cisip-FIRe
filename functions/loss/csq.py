@@ -6,11 +6,12 @@ class CSQLoss(nn.Module):
     """https://github.com/swuxyj/DeepHash-pytorch/blob/master/CSQ.py
     https://openaccess.thecvf.com/content_CVPR_2020/papers/Yuan_Central_Similarity_Quantization_for_Efficient_Image_and_Video_Retrieval_CVPR_2020_paper.pdf
     """
-    def __init__(self, multiclass, nbit, device, lambda_q=0.001, **kwargs):
+    def __init__(self, multiclass, nbit, device, lambda_q=0.001, scale_c=1., **kwargs):
         super(CSQLoss, self).__init__()
         device = torch.device(device)
         self.multiclass = multiclass
         self.lambda_q = lambda_q
+        self.scale_c = scale_c
         self.criterion = nn.BCELoss()
         self.multi_label_random_center = torch.randint(2, (nbit,)).float().to(device)
         self.losses = {}
@@ -27,7 +28,7 @@ class CSQLoss(nn.Module):
         self.losses['center'] = loss_c
         self.losses['quant'] = loss_q
 
-        loss = loss_c + self.lambda_q * loss_q
+        loss = self.scale_c * loss_c + self.lambda_q * loss_q
         return loss
 
     def label2center(self, y, onehot):

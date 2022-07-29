@@ -3,3 +3,4 @@ loss: csq
 
 loss_param:
   lambda_q: 0.001
+  scale_c: 1.0

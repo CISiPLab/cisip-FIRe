@@ -123,7 +123,7 @@ def pre_epoch_operations(loss, **kwargs):
 
 
 def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, onehot,
-                  gpu_train_transform=None, method='supervised', criterion=None):
+                  gpu_train_transform=None, method='supervised', criterion=None, logdir=None):
     model.train()
 
     batch_timer = Timer()
@@ -133,7 +133,7 @@ def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, o
         criterion = train_helper.get_loss(loss_name, **loss_cfg)
     meters = defaultdict(AverageMeter)
 
-    train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
+    train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name, method=method, onehot=onehot)
     criterion.train()
 
     pbar = tqdm(train_loader, desc='Train', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
@@ -182,6 +182,13 @@ def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, o
         running_times.append(batch_timer.total)
         pbar.set_postfix({key: val.avg for key, val in meters.items()})
         batch_timer.tick()
+
+        # if i % 2 == 0:
+        #     io.fast_save(output['code_logits'].detach().cpu(), f'{logdir}/outputs/train_iter_{i}.pth')
+        # if i > 200:
+        #     import sys
+        #     sys.exit(0)
+
     total_timer.toc()
     meters['total_time'].update(total_timer.total)
     std_time = f"time_std={np.std(running_times[1:]):.5f}"
@@ -206,7 +213,7 @@ def test_hashing(model, test_loader, device, loss_name, loss_cfg, onehot, return
     if criterion is None:
         criterion = train_helper.get_loss(loss_name, **loss_cfg)
 
-    train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name)
+    train_helper.update_criterion(model=model, criterion=criterion, loss_name=loss_name, method=method, onehot=onehot)
     criterion.eval()
 
     pbar = tqdm(test_loader, desc='Test', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
@@ -330,7 +337,9 @@ def preprocess(model, config, device):
         logging.info('Preprocessing for CSQ')
         nclass = config['arch_kwargs']['nclass']
         nbit = config['arch_kwargs']['nbit']
-        centroids = get_hadamard(nclass, nbit, fast=True)
+        # centroids = get_hadamard(nclass, nbit, fast=True)
+        centroids = generate_centroids(nclass, nbit, 'B')
+        logging.info("using bernoulli")
         centroids = centroids.to(device)
 
         # move to model
@@ -457,12 +466,6 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
         ground_truth_path = os.path.join(test_loader.dataset.root, 'ground_truth.csv')
         ground_truth = pd.read_csv(ground_truth_path)  # id = index id, images = images id in database
 
-    # update criterion as non-onehot mode, for pairwise methods
-    if method in ['pairwise']:
-        if not onehot:
-            logging.info("Not a onehot label dataset")
-            criterion.label_not_onehot = True
-
     ##### resume training #####
     if config['start_epoch_from'] != 0:
         criterion, train_history, test_history = resume_training(config, logdir,
@@ -502,7 +505,7 @@ def main(config, gpu_transform=False, gpu_mean_transform=False, method='supervis
         train_meters = train_hashing(optimizer, model, train_loader, device, loss_param['loss'],
                                      loss_param['loss_param'], onehot=onehot,
                                      gpu_train_transform=gpu_train_transform,
-                                     method=method, criterion=criterion)
+                                     method=method, criterion=criterion, logdir=logdir)
 
         ##### scheduler #####
         if isinstance(scheduler, list):

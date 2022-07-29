@@ -68,7 +68,7 @@ def get_loss(loss_name, **cfg):
     return loss[loss_name](**cfg)
 
 
-def update_criterion(model, criterion, loss_name):
+def update_criterion(model, criterion, loss_name, method, onehot):
     if loss_name in ['dpn', 'csq']:
         criterion.centroids = model.centroids
     elif loss_name in ['sdhc', 'sdh']:
@@ -78,6 +78,13 @@ def update_criterion(model, criterion, loss_name):
             criterion.weight = model.hash_fc.weight
     elif loss_name in ['adsh']:
         criterion.weight = model.ce_fc.centroids
+
+    # update criterion as non-onehot mode, for pairwise methods
+    if method in ['pairwise']:
+
+        if not onehot and not criterion.label_not_onehot:
+            logging.info("Not a onehot label dataset")
+            criterion.label_not_onehot = True
 
 
 def generate_centroids(nclass, nbit, init_method):
