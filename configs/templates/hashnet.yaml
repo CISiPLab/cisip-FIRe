@@ -8,10 +8,10 @@ loss: hashnet
 arch: dpn
 backbone: alexnet
 optim: adam
-epochs: &epochs 100
+epochs: 100
 eval: 10
 # loss params
 loss_param:
   alpha: 1
   beta: 1
-  step_continuation: *epochs
+  step_continuation: 20
