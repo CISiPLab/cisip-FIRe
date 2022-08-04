@@ -118,8 +118,8 @@ def pre_epoch_operations(loss, **kwargs):
         ep = kwargs['ep']
         loss_param = kwargs['loss_param']
         step_continuation = loss_param['loss_param']['step_continuation']
-        loss_param['loss_param']['beta'] = (ep // step_continuation + 1) ** 0.5
-        logging.info(f'updated scale: {loss_param["loss_param"]["beta"]}')
+        kwargs['criterion'].beta = (ep // step_continuation + 1) ** 0.5
+        logging.info(f'updated scale: {kwargs["criterion"].beta}')
 
 
 def train_hashing(optimizer, model, train_loader, device, loss_name, loss_cfg, onehot,
