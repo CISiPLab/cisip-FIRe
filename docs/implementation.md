@@ -2,6 +2,9 @@
 1. Alexnet
 2. VGG{16}
 3. ResNet{18,34,50,101,152}
+4. ViT
+5. Swim Transformer
+6. ConvNext
 
 # Loss (Method)
 ## Supervised
