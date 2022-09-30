@@ -2,22 +2,22 @@
 To train a model, the config(`--config`), dataset(`--ds`), and other parameters(see the usage below) has to be specified, or otherwise the default value will be used. We have included config file for most supported model in `configs/templates`.
 ```
 usage: train.py [-h] [--config CONFIG] [--backbone BACKBONE]
-                [--ds {imagenet100,nuswide,cifar10,imagenet50a,imagenet50b,cars,cifar10_II,landmark,landmark200,landmark500,gldv2delgembed,roxford5kdelgembed,descriptor,sop,sop_instance,nuswide,coco,mirflickr}]
+                [--ds {imagenet100,nuswide,cifar10,imagenet50a,imagenet50b,cars,cifar10_II,landmark,landmark200,landmark500,gldv2delgembed,roxford5kdelgembed,descriptor,sop,sop_instance,food101,nuswide,coco,mirflickr}]
                 [--dfolder DFOLDER] [--c10-ep {1,2}] [--ds-reset] [--usedb] [--train-ratio TRAIN_RATIO] [--nbit NBIT] [--bs BS] [--maxbs MAXBS] [--epochs EPOCHS]
                 [--arch ARCH] [--gpu-transform] [--gpu-mean-transform] [--no-aug] [--resize-size RESIZE_SIZE] [--crop-size CROP_SIZE] [--R R]
-                [--distance-func {hamming,cosine,euclidean}] [--zero-mean-eval] [--num-worker NUM_WORKER]
-                [--loss {greedyhash,jmlh,dpn,orthocos,ce,bihalf-supervised,orthoarc,ceq,cea,sdhc,csq,adsh,hashnet,dbdh,dpsh,mihash,sdh,dfh,dtsh,greedyhash-unsupervised,bihalf,ssdh,aec,tbh,itq,pca,lsh,sh,cibhash}]
-                [--tag TAG] [--seed SEED] [--optim {sgd,adam,rmsprop}] [--loss-params LOSS_PARAMS] [--device DEVICE] [--eval EVAL] [--lr LR] [--wd WD]
+                [--distance-func {hamming,cosine,euclidean}] [--zero-mean-eval] [--num-worker NUM_WORKER] [--rand-aug]
+                [--loss {greedyhash,jmlh,dpn,orthocos,ce,bihalf-supervised,orthoarc,sdhc,csq,adsh,hashnet,dbdh,dpsh,mihash,sdh,dfh,dtsh,greedyhash-unsupervised,bihalf,ssdh,tbh,itq,pca,lsh,sh,imh,cibhash}]
+                [--tag TAG] [--seed SEED] [--optim {sgd,adam,rmsprop,adan}] [--loss-params LOSS_PARAMS] [--device DEVICE] [--eval EVAL] [--lr LR] [--wd WD]
                 [--step-size STEP_SIZE] [--lr-decay-rate LR_DECAY_RATE] [--scheduler SCHEDULER] [--backbone-lr-scale BACKBONE_LR_SCALE] [--resume]
-                [--resume-dir RESUME_DIR] [--enable-checkpoint] [--save-model] [--load-from LOAD_FROM] [--benchmark] [--hash-bias] [--shuffle-database]
-                [--workers WORKERS] [--train-skip-preprocess] [--db-skip-preprocess] [--test-skip-preprocess] [--dataset-name-suffix DATASET_NAME_SUFFIX] [--accimage]
-                [--pin-memory]
+                [--resume-dir RESUME_DIR] [--enable-checkpoint] [--save-model] [--save-best-model-only] [--discard-hash-outputs] [--load-from LOAD_FROM]
+                [--benchmark] [--disable-tqdm] [--hash-bias] [--shuffle-database] [--workers WORKERS] [--train-skip-preprocess] [--db-skip-preprocess]
+                [--test-skip-preprocess] [--dataset-name-suffix DATASET_NAME_SUFFIX] [--accimage] [--pin-memory] [--wandb]
 
 optional arguments:
   -h, --help            show this help message and exit
   --config CONFIG       configuration file *.yml
   --backbone BACKBONE   the backbone feature extractor
-  --ds {imagenet100,nuswide,cifar10,imagenet50a,imagenet50b,cars,cifar10_II,landmark,landmark200,landmark500,gldv2delgembed,roxford5kdelgembed,descriptor,sop,sop_instance,nuswide,coco,mirflickr}
+  --ds {imagenet100,nuswide,cifar10,imagenet50a,imagenet50b,cars,cifar10_II,landmark,landmark200,landmark500,gldv2delgembed,roxford5kdelgembed,descriptor,sop,sop_instance,food101,nuswide,coco,mirflickr}
                         dataset
   --dfolder DFOLDER     data folder
   --c10-ep {1,2}        cifar10 evaluation protocol
@@ -42,10 +42,11 @@ optional arguments:
   --zero-mean-eval
   --num-worker NUM_WORKER
                         number of worker for dataloader
-  --loss {greedyhash,jmlh,dpn,orthocos,ce,bihalf-supervised,orthoarc,ceq,cea,sdhc,csq,adsh,hashnet,dbdh,dpsh,mihash,sdh,dfh,dtsh,greedyhash-unsupervised,bihalf,ssdh,aec,tbh,itq,pca,lsh,sh,cibhash}
+  --rand-aug            use random augmentation
+  --loss {greedyhash,jmlh,dpn,orthocos,ce,bihalf-supervised,orthoarc,sdhc,csq,adsh,hashnet,dbdh,dpsh,mihash,sdh,dfh,dtsh,greedyhash-unsupervised,bihalf,ssdh,tbh,itq,pca,lsh,sh,imh,cibhash}
   --tag TAG
   --seed SEED
-  --optim {sgd,adam,rmsprop}
+  --optim {sgd,adam,rmsprop,adan}
   --loss-params LOSS_PARAMS
   --device DEVICE       torch.device('?') cpu, cuda:x
   --eval EVAL           total evaluations throughout the training
@@ -64,9 +65,12 @@ optional arguments:
                         resume dir
   --enable-checkpoint
   --save-model
+  --save-best-model-only
+  --discard-hash-outputs
   --load-from LOAD_FROM
                         whether to load from a model
   --benchmark           Benchmark mode, determinitic, and no loss
+  --disable-tqdm        disable tqdm for less verbose stderr
   --hash-bias           add bias to hash_fc
   --shuffle-database    shuffle database during mAP evaluation
   --workers WORKERS     number of workers
@@ -76,7 +80,7 @@ optional arguments:
   --dataset-name-suffix DATASET_NAME_SUFFIX
   --accimage            use accimage as backend
   --pin-memory          pin memory
-
+  --wandb               enable wandb logging
 
 ```
 ## Use the config file
