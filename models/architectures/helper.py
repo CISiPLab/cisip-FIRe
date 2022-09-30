@@ -1,6 +1,7 @@
 import torch.nn as nn
 
 from models.backbone.alexnet import AlexNetBackbone
+from models.backbone.convnext import ConvNextBackbone
 from models.backbone.linear import LinearBackbone
 from models.backbone.mlp import MLPBackbone
 from models.backbone.resnet import ResNetBackbone
@@ -59,6 +60,12 @@ def get_backbone(backbone, nbit, nclass, pretrained, freeze_weight, **kwargs):
     elif backbone == 'swinsmall':
         return SwinTransformerBackbone(nbit=nbit, nclass=nclass, vit_name='swin_small_patch4_window7_224',
                                        pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'convnextbase':
+        return ConvNextBackbone(nbit=nbit, nclass=nclass, vit_name='convnext_base_in22k',
+                                pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
+    elif backbone == 'convnexttiny':
+        return ConvNextBackbone(nbit=nbit, nclass=nclass, vit_name='convnext_base_in22k',
+                                pretrained=pretrained, freeze_weight=freeze_weight, **kwargs)
     else:
         raise NotImplementedError('The backbone not implemented.')
 
