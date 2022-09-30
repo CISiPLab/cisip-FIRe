@@ -116,7 +116,7 @@ if __name__ == "__main__":
                                                           for name in constants.losses[loss]])
     parser.add_argument('--tag', default='test')
     parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--optim', default='adam', choices=['sgd', 'adam', 'rmsprop'])
+    parser.add_argument('--optim', default='adam', choices=['sgd', 'adam', 'rmsprop', 'adan'])
     parser.add_argument('--loss-params', default='', type=str)
 
     parser.add_argument('--device', default='cuda:0', type=str, help='torch.device(\'?\') cpu, cuda:x')

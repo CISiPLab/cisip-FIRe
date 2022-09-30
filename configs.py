@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 import models
+from functions.optim.adan import Adan
 from utils import datasets
 from utils.augmentations import get_train_transform
 
@@ -183,6 +184,17 @@ def optimizer(config, params):
                  lr=kwargs['lr'],
                  betas=kwargs.get('betas', (0.9, 0.999)),
                  weight_decay=kwargs.get('weight_decay', 0))
+    elif o_type == 'adan':
+        o = Adan(params,
+                 lr=kwargs['lr'],
+                 betas=[0.98, 0.92, 0.99], # optimizer betas in Adan (default: None, use opt default [0.98, 0.92, 0.99] in Adan)
+                 weight_decay=0.02,  # weight decay, similar one used in AdamW (default: 0.02)
+                 eps=1e-8, # optimizer epsilon to avoid the bad case where second-order moment is zero
+                 ## (default: None, use opt default 1e-8 in adan)
+                 max_grad_norm=0.0, # if the l2 norm is large than this hyper-parameter,
+                 # then we clip the gradient  (default: 0.0, no gradient clip)
+                 no_prox=False #whether perform weight decay like AdamW (default=False)
+                 )
     else:
         raise ValueError(f'Optimizer specified {o_type} is not defined.')
 
