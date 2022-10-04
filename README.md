@@ -1,6 +1,7 @@
 <div align="left">
 <img width="450" alt="screener" src="https://user-images.githubusercontent.com/23725126/143378891-79b49584-700c-45f2-994c-1c077c7418c3.png"><br><br>
 </div>
+Released September, 2021
 
 -----------------
 
