@@ -140,10 +140,11 @@ class RetrievalExperiment:
 
     def wandb_setup(self):
         if self.wandb:
+            assert 'WANDB_KEY' in os.environ, 'WANDB_KEY is missing.'
             logging.info('WANDB enabled.')
-            wandb.login(key='2672cf4fcfb0bd78032f9e3a341004cafa230027')
+            wandb.login(key=os.environ['WANDB_KEY'])
             cfg = OmegaConf.to_object(self.config)
-            wandb.init(name=self.logdir.split('logs/')[1], config=cfg, entity='kamwoh', project='hashing')
+            wandb.init(name=self.logdir.split('logs/')[1], config=cfg)
 
     def wandb_commit(self):
         if self.wandb:
