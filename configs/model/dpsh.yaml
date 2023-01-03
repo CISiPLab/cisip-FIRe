@@ -1,0 +1,16 @@
+# @package _global_
+
+model:
+  _target_: models.arch.dpsh.DPSH
+
+trainer:
+  _target_: trainers.dpsh.DPSHTrainer
+
+criterion:
+  _target_: models.loss.dpsh.DPSHLoss
+  alpha: 1
+  train_size: 0
+  keep_train_size: 0
+  nbit: ${model.nbit}
+  nclass: ${dataset.nclass}
+  imbalance_scheme: "default" # or "hashnet"

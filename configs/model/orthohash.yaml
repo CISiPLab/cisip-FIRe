@@ -1,0 +1,26 @@
+# @package _global_
+
+model:
+  _target_: models.arch.orthohash.OrthoHash
+  codebook:
+    _target_: trainers.orthohash.get_codebook
+    codebook_method: "N"
+    nclass: ${model.nclass}
+    nbit: ${model.nbit}
+  nbit: 64
+  nclass: ${dataset.nclass}
+  backbone: ${backbone}
+
+trainer:
+  _target_: trainers.orthohash.OrthoHashTrainer
+
+criterion:
+  _target_: models.loss.orthohash.OrthoHashLoss
+  ce: 1
+  s: 8
+  m: 0.2
+  m_type: "cos"  # cos/arc
+  multiclass: ${dataset.multiclass}
+  quan: 0
+  quan_type: "cs"
+  multiclass_loss: "label_smoothing"

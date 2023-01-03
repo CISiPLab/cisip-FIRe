@@ -1,0 +1,3 @@
+_target_: models.backbone.resnet.ResNet18
+pretrained: True
+ssf_finetune: False

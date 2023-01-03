@@ -1,0 +1,2 @@
+_target_: models.backbone.vit.HuggingFaceViT
+name: google/vit-base-patch32-224-in21k

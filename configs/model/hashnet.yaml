@@ -1,0 +1,17 @@
+# @package _global_
+
+model:
+  _target_: models.arch.hashnet.HashNet
+
+trainer:
+  _target_: trainers.hashnet.HashNetTrainer
+
+criterion:
+  _target_: models.loss.hashnet.HashNetLoss
+  alpha: 1
+  beta: 1
+  step_continuation: 20
+  train_size: 0
+  keep_train_size: 0
+  nbit: ${model.nbit}
+  nclass: ${dataset.nclass}

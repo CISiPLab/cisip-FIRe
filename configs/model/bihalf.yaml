@@ -1,0 +1,11 @@
+# @package _global_
+
+model:
+  _target_: models.arch.bihalf.BiHalf
+  gamma: 6.0
+
+trainer:
+  _target_: trainers.bihalf.BiHalfTrainer
+
+criterion:
+  _target_: models.loss.bihalf.BiHalfLoss

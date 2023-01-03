@@ -1,5 +1,0 @@
-loss: bihalf-supervised
-arch: ce
-loss_param:
-  hash_fc_output: 'bihalf'
-  ce: 1

@@ -1,0 +1,60 @@
+data_folder: data/coco
+nclass: 80
+multiclass: True
+R: 5000
+norm: 2
+resize: 256
+crop: 224
+
+train_dataset:
+  _target_: utils.datasets.HashingDataset
+  root: ${data_dir}/${dataset.data_folder}
+  filename: train.txt
+  transform:
+    - _target_: torchvision.transforms.RandomResizedCrop
+      size: ${dataset.crop}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
+    - _target_: torchvision.transforms.RandomHorizontalFlip
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: utils.transforms.normalize_transform
+      _args_:
+        - ${dataset.norm}
+
+test_dataset:
+  _target_: utils.datasets.HashingDataset
+  root: ${data_dir}/${dataset.data_folder}
+  filename: test.txt
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.resize}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
+    - _target_: torchvision.transforms.CenterCrop
+      size: ${dataset.crop}
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: utils.transforms.normalize_transform
+      _args_:
+        - ${dataset.norm}
+
+db_dataset:
+  _target_: utils.datasets.HashingDataset
+  root: ${data_dir}/${dataset.data_folder}
+  filename: database.txt
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.resize}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
+    - _target_: torchvision.transforms.CenterCrop
+      size: ${dataset.crop}
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: utils.transforms.normalize_transform
+      _args_:
+        - ${dataset.norm}

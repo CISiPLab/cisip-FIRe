@@ -1,0 +1,2 @@
+_target_: models.backbone.clip.CLIP
+name: openai/clip-vit-base-patch32

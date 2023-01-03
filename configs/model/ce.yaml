@@ -1,0 +1,11 @@
+# @package _global_
+
+model:
+  _target_: models.arch.ce.CE
+
+trainer:
+  _target_: trainers.ce.CETrainer
+
+criterion:
+  _target_: models.loss.ce.CELoss
+  multiclass: ${dataset.multiclass}

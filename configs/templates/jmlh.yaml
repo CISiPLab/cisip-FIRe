@@ -1,5 +1,0 @@
-loss: jmlh
-loss_param:
-  lmbd: 0.1
-  stochastic_eps: True
-  hash_layer: stochasticbin

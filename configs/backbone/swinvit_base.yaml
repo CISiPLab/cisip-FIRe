@@ -1,0 +1,2 @@
+_target_: models.backbone.swinvit.SwinViTBase
+pretrained: True

@@ -4,6 +4,7 @@ import torch.nn as nn
 
 class BiHalfFunction(torch.autograd.Function):
     gamma = 6
+
     @staticmethod
     def forward(ctx, u):
         # Yunqiang for half and half (optimal transport) 0.598447

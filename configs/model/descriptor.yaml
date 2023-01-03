@@ -1,0 +1,9 @@
+# @package _global_
+
+model: ${backbone}
+
+trainer:
+  _target_: trainers.descriptor.DescriptorTrainer
+
+criterion:
+  _target_: models.loss.base.BaseLoss

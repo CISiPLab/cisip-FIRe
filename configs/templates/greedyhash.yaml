@@ -1,8 +1,0 @@
-loss: greedyhash
-arch: gh
-
-loss_param:
-  pow: 3
-  alpha: 1  # 0.1 if cifar10
-  hash_fc_output: 'identity'
-  hash_layer: 'signhash'

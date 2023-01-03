@@ -1,110 +1,106 @@
 import logging
 import os
-from abc import ABC
-from typing import Tuple, Any
 
 import numpy as np
 import torch
-import torchvision
-from pandas import read_csv
-from torch.utils.data import Dataset, DataLoader
-from torchvision.datasets import CIFAR10, CIFAR100
-from torchvision.datasets.folder import pil_loader, accimage_loader
+import torch.nn.functional as F
+from omegaconf import ListConfig
+from torch.utils.data import Dataset
+from torchvision.datasets import CIFAR10, CIFAR100, MNIST
+from torchvision.datasets.folder import pil_loader
 from torchvision.transforms import transforms
-from tqdm import tqdm
 
-import configs
-from functions.evaluate_roxf import configdataset, DATASETS
-from functions.mining import SimpleMemoryBank
-from utils.augmentations import GaussianBlurOpenCV
+ROOTDIR = os.environ.get('ROOTDIR', '.')  # for condor
 
 
-class BaseDataset(Dataset, ABC):
-    def get_img_paths(self):
-        raise NotImplementedError
+def use_torch_loader():
+    return lambda x: torch.load(x, map_location='cpu')
 
 
-class HashingDataset(BaseDataset):
+def use_pil_loader():
+    return pil_loader
+
+
+class HashingDataset(Dataset):
     def __init__(self, root,
                  transform=None,
                  target_transform=None,
-                 filename='train',
+                 filename='train.txt',
                  separate_multiclass=False,
-                 ratio=1):
-        if torchvision.get_image_backend() == 'PIL':
-            self.loader = pil_loader
-        else:
-            self.loader = accimage_loader
-
+                 path_prefix='',
+                 loader=pil_loader,
+                 selected_classes=[],
+                 train_data=None,
+                 train_labels=None,
+                 verbose=True):
+        self.loader = loader
         self.separate_multiclass = separate_multiclass
         self.root = os.path.expanduser(root)
+        if isinstance(transform, (list, ListConfig)):
+            transform = transforms.Compose(transform)
+        if verbose:
+            print(transform)
         self.transform = transform
         self.target_transform = target_transform
         self.filename = filename
-        self.train_data = []
-        self.train_labels = []
-        self.ratio = ratio
+        if path_prefix != '' and path_prefix[-1] != '/':
+            path_prefix = path_prefix + '/'
+        self.path_prefix = path_prefix
+        self.selected_classes = selected_classes
+        self.verbose = verbose
 
-        filename = os.path.join(self.root, self.filename)
+        if train_data is None:
+            self.train_data = []
+            self.train_labels = []
 
-        is_pkl = False
+            filename = os.path.join(self.root, self.filename)
 
-        with open(filename, 'r') as f:
-            while True:
-                lines = f.readline()
-                if not lines:
-                    break
+            with open(filename, 'r') as f:
+                while True:
+                    lines = f.readline()
+                    if not lines:
+                        break
 
-                path_tmp = lines.split()[0]
-                label_tmp = lines.split()[1:]
-                self.is_onehot = len(label_tmp) != 1
-                if not self.is_onehot:
-                    label_tmp = lines.split()[1]
-                if self.separate_multiclass:
-                    assert self.is_onehot, 'if multiclass, please use onehot'
-                    nonzero_index = np.nonzero(np.array(label_tmp, dtype=np.int))[0]
-                    for c in nonzero_index:
+                    lines = lines.strip()
+                    split_lines = lines.split()
+                    path_tmp = split_lines[0]
+                    label_tmp = split_lines[1:]
+                    self.is_onehot = len(label_tmp) != 1
+                    if not self.is_onehot:
+                        label_tmp = label_tmp[0]
+                    if self.separate_multiclass:
+                        assert self.is_onehot, 'if multiclass, please use onehot'
+                        nonzero_index = np.nonzero(np.array(label_tmp, dtype=np.int))[0]
+                        for c in nonzero_index:
+                            self.train_data.append(path_tmp)
+                            label_tmp = ['1' if i == c else '0' for i in range(len(label_tmp))]
+                            self.train_labels.append(label_tmp)
+                    else:
                         self.train_data.append(path_tmp)
-                        label_tmp = ['1' if i == c else '0' for i in range(len(label_tmp))]
                         self.train_labels.append(label_tmp)
+
+            self.train_data = np.array(self.train_data)
+            self.train_labels = np.array(self.train_labels, dtype=np.float32)
+
+            if len(selected_classes) != 0:
+                cmask = np.zeros(self.train_data.shape[0], dtype=np.bool)
+                if self.is_onehot:  # this do not work for multiclass
+                    label_idx = self.train_labels.argmax(1).astype(np.int32)
                 else:
-                    self.train_data.append(path_tmp)
-                    self.train_labels.append(label_tmp)
+                    label_idx = self.train_labels.astype(np.int32)
+                for c in selected_classes:
+                    cmask |= label_idx == c
 
-                is_pkl = path_tmp.endswith('.pkl')  # if save as pkl, pls make sure dont use different style of loading
+                dump_number = self.train_data.shape[0] - cmask.sum()
+                print(f'Dumped number of data: {dump_number}')
+                self.train_data = self.train_data[cmask]
+                self.train_labels = self.train_labels[cmask]
 
-        if is_pkl:
-            self.loader = torch.load
-
-        self.train_data = np.array(self.train_data)
-        self.train_labels = np.array(self.train_labels, dtype=float)
-
-        if ratio != 1:
-            assert 0 < ratio < 1, 'data ratio is in between 0 and 1 exclusively'
-            N = len(self.train_data)
-            randidx = np.arange(N)
-            np.random.shuffle(randidx)
-            randidx = randidx[:int(ratio * N)]
-            self.train_data = self.train_data[randidx]
-            self.train_labels = self.train_labels[randidx]
-
-        logging.info(f'Number of data: {self.train_data.shape[0]}')
-
-    def filter_classes(self, classes):  # only work for single class dataset
-        new_data = []
-        new_labels = []
-
-        for idx, c in enumerate(classes):
-            new_onehot = np.zeros(len(classes))
-            new_onehot[idx] = 1
-            cmask = self.train_labels.argmax(axis=1) == c
-
-            new_data.append(self.train_data[cmask])
-            new_labels.append(np.repeat([new_onehot], int(np.sum(cmask)), axis=0))
-            # new_labels.append(self.train_labels[cmask])
-
-        self.train_data = np.concatenate(new_data)
-        self.train_labels = np.concatenate(new_labels)
+            print(f'Number of data: {self.train_data.shape[0]}')
+        else:
+            self.train_data = train_data
+            self.train_labels = train_labels
+            self.is_onehot = len(self.train_labels.shape) == 2
 
     def __getitem__(self, index):
         """
@@ -113,383 +109,24 @@ class HashingDataset(BaseDataset):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
-        img, target = self.train_data[index], self.train_labels[index]
+        path, target = self.train_data[index], self.train_labels[index]
         target = torch.tensor(target)
 
-        img = self.loader(img)
+        img = self.loader(os.path.join(ROOTDIR, f'{self.path_prefix}{path}'))
 
         if self.transform is not None:
             img = self.transform(img)
 
         if self.target_transform is not None:
             target = self.target_transform(target)
-
         return img, target, index
 
     def __len__(self):
         return len(self.train_data)
 
-    def get_img_paths(self):
-        return self.train_data
 
-
-class IndexDatasetWrapper(BaseDataset):
-    def __init__(self, ds) -> None:
-        super(Dataset, self).__init__()
-        self.__dict__['ds'] = ds
-
-    def __setattr__(self, name, value):
-        setattr(self.ds, name, value)
-
-    def __getattr__(self, attr):
-        if attr in self.__dict__:
-            return getattr(self, attr)
-        return getattr(self.ds, attr)
-
-    def __getitem__(self, index: int) -> Tuple:
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target, index) where target is index of the target class.
-        """
-        outs = self.ds.__getitem__(index)
-        return tuple(list(outs) + [index])
-
-    def __len__(self):
-        return len(self.ds)
-
-    def get_img_paths(self):
-        return self.ds.get_img_paths()
-
-
-class Denormalize(object):
-    def __init__(self, mean, std):
-        self.mean = mean
-        self.std = std
-
-    def __call__(self, tensor):
-        for t, m, s in zip(tensor, self.mean, self.std):
-            t.mul_(s).add_(m)
-        return tensor
-
-
-class InstanceDiscriminationDataset(BaseDataset):
-    def augment_image(self, img):
-        # if use this, please run script with --no-aug and --gpu-mean-transform
-        return self.transform(self.to_pil(img))
-
-    def weak_augment_image(self, img):
-        # if use this, please run script with --no-aug and --gpu-mean-transform
-        return self.weak_transform(self.to_pil(img))
-
-    def __init__(self, ds, tmode='simclr', imgsize=224, weak_mode=0) -> None:
-        super(Dataset, self).__init__()
-        self.__dict__['ds'] = ds
-
-        if 'simclr' in tmode:
-            s = 0.5
-            size = imgsize
-            color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
-            data_transforms = transforms.Compose([transforms.RandomResizedCrop(size=size, scale=(0.5, 1.0)),
-                                                  transforms.RandomHorizontalFlip(),
-                                                  transforms.RandomApply([color_jitter], p=0.7),
-                                                  transforms.RandomGrayscale(p=0.2),
-                                                  GaussianBlurOpenCV(kernel_size=3),
-                                                  # GaussianBlur(kernel_size=int(0.1 * size)),
-                                                  transforms.ToTensor(),
-                                                  # 0.2 * 224 = 44 pixels
-                                                  transforms.RandomErasing(p=0.2, scale=(0.02, 0.2))])
-            self.transform = data_transforms
-
-        # lazy fix, can be more pretty and general, cibhash part 1/2
-        elif tmode == 'cibhash':
-            logging.info('CIBHash Augmentations')
-            s = 0.5
-            size = imgsize
-            color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
-            data_transforms = transforms.Compose([transforms.RandomResizedCrop(size=size, scale=(0.5, 1.0)),
-                                                  transforms.RandomHorizontalFlip(),
-                                                  transforms.RandomApply([color_jitter], p=0.7),
-                                                  transforms.RandomGrayscale(p=0.2),
-                                                  GaussianBlurOpenCV(kernel_size=3),
-                                                  # GaussianBlur(kernel_size=3),
-                                                  transforms.ToTensor()])
-            self.transform = data_transforms
-
-        else:
-            raise ValueError(f'unknown mode {tmode}')
-
-        if weak_mode == 1:
-            logging.info(f'Weak mode {weak_mode} activated.')
-            self.weak_transform = transforms.Compose([
-                transforms.Resize(256),  # temp lazy hard code
-                transforms.CenterCrop(imgsize),
-                transforms.ToTensor()
-            ])
-        elif weak_mode == 2:
-            logging.info(f'Weak mode {weak_mode} activated.')
-            self.weak_transform = transforms.Compose([
-                transforms.Resize(256),  # temp lazy hard code
-                transforms.RandomCrop(imgsize),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor()
-            ])
-
-        self.weak_mode = weak_mode
-        self.tmode = tmode
-        self.imgsize = imgsize
-        self.to_pil = transforms.ToPILImage()
-
-    def __setattr__(self, name, value):
-        setattr(self.ds, name, value)
-
-    def __getattr__(self, attr):
-        if attr in self.__dict__:
-            return getattr(self, attr)
-        return getattr(self.ds, attr)
-
-    def __getitem__(self, index: int) -> Tuple[Any, Any, Any]:
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target, index) where target is index of the target class.
-        """
-        out = self.ds.__getitem__(index)
-        img, target = out[:2]  # exclude index
-
-        # if self.tmode == 'simclr':
-        #     aug_imgs = [img, self.augment_image(img)]
-        # else:
-        if self.weak_mode != 0:
-            aug_imgs = [self.weak_augment_image(img), self.augment_image(img)]
-        else:
-            aug_imgs = [self.augment_image(img), self.augment_image(img)]
-
-        return torch.stack(aug_imgs, dim=0), target, index
-
-    def __len__(self):
-        return len(self.ds)
-
-    def get_img_paths(self):
-        return self.ds.get_img_paths()
-
-
-class RotationDataset(BaseDataset):
-
-    @staticmethod
-    def rotate_img(img, rot):
-        img = np.transpose(img.numpy(), (1, 2, 0))
-        if rot == 0:  # 0 degrees rotation
-            out = img
-        elif rot == 90:  # 90 degrees rotation
-            out = np.flipud(np.transpose(img, (1, 0, 2)))
-        elif rot == 180:  # 90 degrees rotation
-            out = np.fliplr(np.flipud(img))
-        elif rot == 270:  # 270 degrees rotation / or -90
-            out = np.transpose(np.flipud(img), (1, 0, 2))
-        else:
-            raise ValueError('rotation should be 0, 90, 180, or 270 degrees')
-        return torch.from_numpy(np.transpose(out, (2, 0, 1)).copy())
-
-    def __init__(self, ds) -> None:
-        super(Dataset, self).__init__()
-        self.__dict__['ds'] = ds
-
-    def __setattr__(self, name, value):
-        setattr(self.ds, name, value)
-
-    def __getattr__(self, attr):
-        if attr in self.__dict__:
-            return getattr(self, attr)
-        return getattr(self.ds, attr)
-
-    def __getitem__(self, index: int) -> Tuple[Any, Any, Any, Any]:
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target, index) where target is index of the target class.
-        """
-        out = self.ds.__getitem__(index)
-        img, target = out[:2]  # exclude index
-
-        # rot_label = np.random.randint(0, 4)  # .item()
-        rot_labels = [0, 1, 2, 3]
-
-        rots = [0, 90, 180, 270]
-        # rots = [0, rots[rot_label]]
-        rot_imgs = [self.rotate_img(img, rot) for rot in rots]
-
-        return torch.stack(rot_imgs, dim=0), torch.tensor(rot_labels), target, index
-
-    def __len__(self):
-        return len(self.ds)
-
-    def get_img_paths(self):
-        return self.ds.get_img_paths()
-
-
-class LandmarkDataset(BaseDataset):
-    def __init__(self, root,
-                 transform=None,
-                 target_transform=None,
-                 filename='train.csv',
-                 onehot=False, return_id=False):
-        self.loader = pil_loader
-        self.root = os.path.expanduser(root)
-        self.transform = transform
-        self.target_transform = target_transform
-        self.filename = filename
-        self.train_labels = []
-        self.set_name = filename[:-4]
-        self.onehot = onehot
-        self.return_id = return_id
-
-        def get_path(i: str):
-            return os.path.join(root, self.set_name, i[0], i[1], i[2], i + ".jpg")
-
-        filename = os.path.join(self.root, self.filename)
-        self.df = read_csv(filename)
-        self.df['path'] = self.df['id'].apply(get_path)
-        self.max_index = self.df['landmark_id'].max() + 1
-
-        logging.info(f'Number of data: {len(self.df)}')
-
-    def to_onehot(self, i):
-        t = torch.zeros(self.max_index)
-        t[i] = 1
-        return t
-
-    def __getitem__(self, index):
-        img = self.df['path'][index]
-
-        if self.onehot:
-            target = self.to_onehot(self.df['landmark_id'][index])
-        else:
-            target = self.df['landmark_id'][index]
-        # target = torch.tensor(target)
-
-        img = self.loader(img)
-
-        if self.transform is not None:
-            img = self.transform(img)
-
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-        if self.return_id:
-            return img, target, (self.df['id'][index], index)
-        return img, target
-
-    def __len__(self):
-        return len(self.df)
-
-    def get_img_paths(self):
-        return self.df['path'].to_numpy()
-
-
-class SingleIDDataset(BaseDataset):
-    """Dataset with only single class ID
-    To be merge with Landmark"""
-
-    def __init__(self, root,
-                 transform=None,
-                 target_transform=None,
-                 filename='train.csv',
-                 onehot=False):
-        self.loader = pil_loader
-        self.root = os.path.expanduser(root)
-        self.transform = transform
-        self.target_transform = target_transform
-        self.filename = filename
-        self.train_labels = []
-        self.set_name = filename[:-4]
-        self.onehot = onehot
-
-        def get_path(i: str):
-            return os.path.join(root, "imgs", i)
-
-        filename = os.path.join(self.root, self.filename)
-        self.df = read_csv(filename)
-        self.df['path'] = self.df['path'].apply(get_path)
-        self.max_index = self.df['class_id'].max() + 1
-
-        logging.info(f'Number of data: {len(self.df)}')
-
-    def to_onehot(self, i):
-        t = torch.zeros(self.max_index)
-        t[i] = 1
-        return t
-
-    def __getitem__(self, index):
-        img = self.df['path'][index]
-
-        if self.onehot:
-            target = self.to_onehot(self.df['class_id'][index])
-        else:
-            target = self.df['class_id'][index]
-        # target = torch.tensor(target)
-
-        img = self.loader(img)
-
-        if self.transform is not None:
-            img = self.transform(img)
-
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-        return img, target, index
-
-    def __len__(self):
-        return len(self.df)
-
-    def get_img_paths(self):
-        return self.df['path'].to_numpy()
-
-
-class ROxfordParisDataset(BaseDataset):
-    def __init__(self,
-                 dataset='roxford5k',
-                 filename='test.txt',
-                 transform=None,
-                 target_transform=None):
-        self.loader = pil_loader
-        self.transform = transform
-        self.target_transform = target_transform
-        assert filename in ['test.txt', 'database.txt']
-        self.set_name = filename
-        assert dataset in DATASETS
-        self.cfg = configdataset(dataset, os.path.join('data'))
-
-        logging.info(f'Number of data: {self.__len__()}')
-
-    def __getitem__(self, index):
-        if self.set_name == 'database.txt':
-            img = self.cfg['im_fname'](self.cfg, index)
-        elif self.set_name == 'test.txt':
-            img = self.cfg['qim_fname'](self.cfg, index)
-
-        img = self.loader(img)
-        if self.set_name == 'test.txt':
-            img = img.crop(self.cfg['gnd'][index]['bbx'])
-
-        if self.transform is not None:
-            img = self.transform(img)
-
-        return img, index, index  # img, None, index is throw error
-
-    def __len__(self):
-        if self.set_name == 'test.txt':
-            return self.cfg['nq']
-        elif self.set_name == 'database.txt':
-            return self.cfg['n']
-
-    def get_img_paths(self):
-        raise NotImplementedError('Not supported.')
-
-
-class DescriptorDataset(BaseDataset):
-    def __init__(self, root, filename, ratio=1):
+class DescriptorDataset(Dataset):
+    def __init__(self, root, filename, ratio=1, selected_classes=[]):
         self.data_dict = torch.load(os.path.join(root, filename), map_location=torch.device('cpu'))
         self.filename = filename
         self.root = root
@@ -504,6 +141,20 @@ class DescriptorDataset(BaseDataset):
             for key in self.data_dict:
                 self.data_dict[key] = self.data_dict[key][randidx]
 
+        if len(selected_classes) != 0:
+            # assert len(self.data_dict['labels'].shape) == 1, 'not support for multi class'
+            new_codes = []
+            new_labels = []
+            for c in selected_classes:
+                if len(self.data_dict['labels'].size()) == 2:
+                    cmask = self.data_dict['labels'].argmax(1) == c
+                else:
+                    cmask = self.data_dict['labels'] == c
+                new_codes.append(self.data_dict['codes'][cmask])
+                new_labels.append(self.data_dict['labels'][cmask])
+            self.data_dict['codes'] = torch.cat(new_codes, dim=0)
+            self.data_dict['labels'] = torch.cat(new_labels, dim=0)
+
         logging.info(f'Number of data in {filename}: {self.__len__()}')
 
     def __getitem__(self, index):
@@ -515,17 +166,19 @@ class DescriptorDataset(BaseDataset):
     def __len__(self):
         return len(self.data_dict['codes'])
 
-    def get_img_paths(self):
-        raise NotImplementedError('Not supported for descriptor dataset. Please try usual Image Dataset if you want to get all image paths.')
+
+class IndexWrapperDataset(Dataset):
+    def __init__(self, dataset):
+        self.dataset = dataset
+
+    def __getitem__(self, index):
+        return tuple(list(self.dataset[index]) + [index])
+
+    def __len__(self):
+        return len(self.dataset)
 
 
-class EmbeddingDataset(BaseDataset):
-    def __init__(self, root,
-                 filename='train.txt'):
-        self.data_dict = torch.load(os.path.join(root, filename), map_location=torch.device('cpu'))
-        self.filename = filename
-        self.root = root
-        logging.info(f'Number of data in {filename}: {self.__len__()}')
+class LandmarkDescriptorDataset(DescriptorDataset):
 
     def __getitem__(self, index):
         embed = self.data_dict['codes'][index]
@@ -540,61 +193,26 @@ class EmbeddingDataset(BaseDataset):
     def __len__(self):
         return len(self.data_dict['id'])
 
-    def get_img_paths(self):
-        raise NotImplementedError('Not supported for descriptor dataset. Please try usual Image Dataset if you want to get all image paths.')
+
+class GLDv2Dataset(HashingDataset):
+    def __getitem__(self, index):
+        img, label, _ = super(GLDv2Dataset, self).__getitem__(index)
+        landmark_id = self.train_data[index].split('.jpg')[0].split('/')[-1]  # a/b/c/abcxxxx.jpg -> abcxxxx
+
+        return img, label, (landmark_id, index)
 
 
-class NeighbourDatasetWrapper(BaseDataset):
-    def __init__(self, ds, model, config) -> None:
-        super(Dataset, self).__init__()
-        self.ds = ds
+class OneHot:
+    def __init__(self, nclass):
+        self.nclass = nclass
 
-        device = config['device']
-        loader = DataLoader(ds, config['batch_size'],
-                            shuffle=False,
-                            drop_last=False,
-                            num_workers=os.cpu_count())
+    def __call__(self, index):
+        index = torch.tensor(int(index)).long()
+        return F.one_hot(index, self.nclass)
 
-        model.eval()
-        pbar = tqdm(loader, desc='Obtain Codes', ascii=True, bar_format='{l_bar}{bar:10}{r_bar}',
-                    disable=configs.disable_tqdm)
-        ret_feats = []
 
-        for i, (data, labels, index) in enumerate(pbar):
-            with torch.no_grad():
-                data, labels = data.to(device), labels.to(device)
-                x, code_logits, b = model(data)[:3]
-                ret_feats.append(x.cpu())
-
-        ret_feats = torch.cat(ret_feats)
-
-        mbank = SimpleMemoryBank(len(self.ds), model.backbone.in_features, device)
-        mbank.update(ret_feats)
-
-        neighbour_topk = config['dataset_kwargs'].get('neighbour_topk', 5)
-        indices = mbank.mine_nearest_neighbors(neighbour_topk)
-
-        self.indices = indices[:, 1:]  # exclude itself
-
-    def __getitem__(self, index: int) -> Tuple[Any, Any, Any, Any, Any, Any]:
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target, index) where target is index of the target class.
-        """
-        img, target = self.ds.__getitem__(index)
-
-        randidx = np.random.choice(self.indices[index], 1)[0]
-        nbimg, nbtar = self.ds.__getitem__(randidx)
-
-        return img, target, index, nbimg, nbtar, randidx
-
-    def __len__(self):
-        return len(self.ds)
-
-    def get_img_paths(self):
-        return self.ds.get_img_paths()
+def to_long(x):
+    return x.long()
 
 
 def one_hot(nclass):
@@ -605,38 +223,135 @@ def one_hot(nclass):
     return f
 
 
+def multi_label_to_one_hot(nclass):
+    def f(index):
+        one_hot = torch.zeros(nclass)
+        one_hot[index] = 1
+        return one_hot
+
+    return f
+
+
+def mnist(**kwargs):
+    transform = kwargs['transform']
+    ep = kwargs['evaluation_protocol']
+    fn = kwargs['filename']
+    root = kwargs['root']
+
+    if isinstance(transform, (list, ListConfig)):
+        transform = transforms.Compose(transform)
+
+    traind = MNIST(f'{root}',
+                   transform=transform, target_transform=one_hot(10),
+                   train=True, download=True)
+    testd = MNIST(f'{root}', train=False, download=True)
+    combine_data = torch.cat([traind.data, testd.data], dim=0).numpy()
+    combine_targets = torch.cat([traind.targets, testd.targets], dim=0).numpy()
+    is_train = torch.cat([torch.ones(len(traind.data)), torch.zeros(len(testd.targets))], dim=0).bool().numpy()
+
+    path = f'{root}/{fn}'
+
+    load_data = not os.path.exists(path)
+
+    if not load_data:
+        print(f'Loading {path}')
+        data_index = torch.load(path)
+    else:
+        train_data_index = []
+        query_data_index = []
+        db_data_index = []
+
+        data_id = np.arange(combine_data.shape[0])  # [0, 1, ...]
+
+        for i in range(10):
+            class_mask = combine_targets == i
+            index_of_class = data_id[class_mask].copy()  # index of the class [2, 10, 656,...]
+            np.random.shuffle(index_of_class)
+
+            if ep == 1:
+                query_n = 100  # // (nclass // 10)
+                train_n = 500  # // (nclass // 10)
+
+                index_for_query = index_of_class[:query_n].tolist()
+
+                index_for_db = index_of_class[query_n:].tolist()
+                index_for_train = index_for_db[:train_n]
+            elif ep == 2:
+                query_n = 1000  # // (nclass // 10)
+                train_n = 500  # // (nclass // 10)
+
+                index_for_query = index_of_class[:query_n].tolist()
+
+                index_for_db = index_of_class[query_n:].tolist()
+                index_for_train = index_for_db[:train_n]
+            elif ep == 3:
+                query_n = 1000  # // (nclass // 10)
+
+                index_for_query = index_of_class[:query_n].tolist()
+                index_for_db = index_of_class[query_n:].tolist()
+                index_for_train = index_for_db
+            else:  # no shuffle
+                train_n = 500
+
+                index_for_query = data_id[(class_mask & (~is_train))].tolist()  # 1000
+                index_for_db = data_id[(class_mask & is_train)]
+
+                train_randidx = torch.randperm(len(index_for_db))[:train_n].numpy()
+                index_for_train = index_for_db[train_randidx].tolist()
+                index_for_db = index_for_db.tolist()
+
+            train_data_index.extend(index_for_train)
+            query_data_index.extend(index_for_query)
+            db_data_index.extend(index_for_db)
+
+        train_data_index = np.array(train_data_index)
+        query_data_index = np.array(query_data_index)
+        db_data_index = np.array(db_data_index)
+
+        torch.save(train_data_index, f'{root}/{ep}_train.txt')
+        torch.save(query_data_index, f'{root}/{ep}_test.txt')
+        torch.save(db_data_index, f'{root}/{ep}_database.txt')
+        data_index = {
+            'train.txt': train_data_index,
+            'test.txt': query_data_index,
+            'database.txt': db_data_index
+        }[fn]
+
+    traind.data = torch.from_numpy(combine_data[data_index])
+    traind.targets = torch.from_numpy(combine_targets[data_index])
+
+    return IndexWrapperDataset(traind)
+
+
 def cifar(nclass, **kwargs):
     transform = kwargs['transform']
     ep = kwargs['evaluation_protocol']
     fn = kwargs['filename']
     reset = kwargs['reset']
 
+    root_prefix = kwargs['root']
+
+    if isinstance(transform, (list, ListConfig)):
+        transform = transforms.Compose(transform)
+
+    print(transform)
+
     CIFAR = CIFAR10 if int(nclass) == 10 else CIFAR100
-    traind = CIFAR(f'data/cifar{nclass}',
+    traind = CIFAR(f'{root_prefix}{nclass}',
                    transform=transform, target_transform=one_hot(int(nclass)),
                    train=True, download=True)
-    traind = IndexDatasetWrapper(traind)
-    testd = CIFAR(f'data/cifar{nclass}',
-                  transform=transform, target_transform=one_hot(int(nclass)),
-                  train=False, download=True)
-    testd = IndexDatasetWrapper(testd)
-
-    if ep == 2:  # using orig train and test
-        if fn == 'test.txt':
-            return testd
-        else:  # train.txt and database.txt
-            return traind
+    testd = CIFAR(f'{root_prefix}{nclass}', train=False, download=True)
 
     combine_data = np.concatenate([traind.data, testd.data], axis=0)
     combine_targets = np.concatenate([traind.targets, testd.targets], axis=0)
+    is_train = np.concatenate([np.ones(len(traind.data)), np.zeros(len(testd.targets))], axis=0).astype(bool)
 
-    path = f'data/cifar{nclass}/0_0_{ep}_{fn}'
+    path = f'{root_prefix}{nclass}/0_{ep}_{fn}'
 
-    load_data = fn == 'train.txt'
-    load_data = load_data and (reset or not os.path.exists(path))
+    load_data = (reset or not os.path.exists(path))
 
     if not load_data:
-        logging.info(f'Loading {path}')
+        print(f'Loading {path}')
         data_index = torch.load(path)
     else:
         train_data_index = []
@@ -658,22 +373,29 @@ def cifar(nclass, **kwargs):
 
                 index_for_db = index_of_class[query_n:].tolist()
                 index_for_train = index_for_db[:train_n]
-            elif ep == 2:  # ep2 = take all data
+            elif ep == 2:
+                query_n = 1000  # // (nclass // 10)
+                train_n = 500  # // (nclass // 10)
+
+                index_for_query = index_of_class[:query_n].tolist()
+
+                index_for_db = index_of_class[query_n:].tolist()
+                index_for_train = index_for_db[:train_n]
+            elif ep == 3:
                 query_n = 1000  # // (nclass // 10)
 
                 index_for_query = index_of_class[:query_n].tolist()
                 index_for_db = index_of_class[query_n:].tolist()
                 index_for_train = index_for_db
-
-            elif ep == 3:  # Bi-Half Cifar10(II)
-                query_n = 1000
+            else:  # no shuffle
                 train_n = 500
-                index_for_query = index_of_class[:query_n].tolist()
-                index_for_db = index_of_class[query_n:].tolist()
-                index_for_train = index_for_db[:train_n]
 
-            else:
-                raise NotImplementedError('')
+                index_for_query = data_id[(class_mask & (~is_train))].tolist()  # 1000
+                index_for_db = data_id[(class_mask & is_train)]
+
+                train_randidx = torch.randperm(len(index_for_db))[:train_n].numpy()
+                index_for_train = index_for_db[train_randidx].tolist()
+                index_for_db = index_for_db.tolist()
 
             train_data_index.extend(index_for_train)
             query_data_index.extend(index_for_query)
@@ -683,9 +405,9 @@ def cifar(nclass, **kwargs):
         query_data_index = np.array(query_data_index)
         db_data_index = np.array(db_data_index)
 
-        torch.save(train_data_index, f'data/cifar{nclass}/0_0_{ep}_train.txt')
-        torch.save(query_data_index, f'data/cifar{nclass}/0_0_{ep}_test.txt')
-        torch.save(db_data_index, f'data/cifar{nclass}/0_0_{ep}_database.txt')
+        torch.save(train_data_index, f'{root_prefix}{nclass}/0_{ep}_train.txt')
+        torch.save(query_data_index, f'{root_prefix}{nclass}/0_{ep}_test.txt')
+        torch.save(db_data_index, f'{root_prefix}{nclass}/0_{ep}_database.txt')
 
         data_index = {
             'train.txt': train_data_index,
@@ -696,130 +418,27 @@ def cifar(nclass, **kwargs):
     traind.data = combine_data[data_index]
     traind.targets = combine_targets[data_index]
 
-    return traind
+    return IndexWrapperDataset(traind)
 
 
-def imagenet100(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    suffix = kwargs.get('dataset_name_suffix', '')
-
-    d = HashingDataset(f'data/imagenet{suffix}', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
+def read_class_names(path):
+    names = open(path).readlines()
+    names = [name.strip() for name in names]
+    return names
 
 
-def cars(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-
-    d = HashingDataset('data/cars', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
-
-
-def landmark(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    return_id = kwargs.get('return_id', False)
-
-    d = LandmarkDataset('data/landmark', transform=transform, filename=filename, return_id=return_id)
-    return d
-
-
-def nuswide(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    separate_multiclass = kwargs.get('separate_multiclass', False)
-    suffix = kwargs.get('dataset_name_suffix', '')
-
-    d = HashingDataset(f'data/nuswide_v2_256{suffix}',
-                       transform=transform,
-                       filename=filename,
-                       separate_multiclass=separate_multiclass,
-                       ratio=kwargs.get('ratio', 1))
-    return d
-
-
-def nuswide_single(**kwargs):
-    return nuswide(separate_multiclass=True, **kwargs)
-
-
-def coco(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    suffix = kwargs.get('dataset_name_suffix', '')
-
-    d = HashingDataset(f'data/coco{suffix}', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
-
-
-def roxford5k(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    d = ROxfordParisDataset(dataset='roxford5k', filename=filename, transform=transform)
-    return d
-
-
-def rparis6k(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    d = ROxfordParisDataset(dataset='rparis6k', filename=filename, transform=transform)
-    return d
-
-
-def gldv2delgembed(**kwargs):
-    filename = kwargs['filename']
-    d = EmbeddingDataset('data/gldv2delgembed', filename=filename)
-    return d
-
-
-def roxford5kdelgembed(**kwargs):
-    filename = kwargs['filename']
-    d = EmbeddingDataset('data/roxford5kdelgembed', filename=filename)
-    return d
-
-
-def rparis6kdelgembed(**kwargs):
-    filename = kwargs['filename']
-    d = EmbeddingDataset('data/rparis6kdelgembed', filename=filename)
-    return d
-
-
-def descriptor(**kwargs):
-    filename = kwargs['filename']
-    data_folder = kwargs['data_folder']
-    d = DescriptorDataset(data_folder, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
-
-
-def mirflickr(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    suffix = kwargs.get('dataset_name_suffix', '')
-
-    d = HashingDataset(f'data/mirflickr{suffix}', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
-
-
-def sop_instance(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-
-    d = SingleIDDataset('data/sop_instance', transform=transform, filename=filename)
-    return d
-
-
-def sop(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-    suffix = kwargs.get('dataset_name_suffix', '')
-
-    d = HashingDataset(f'data/sop{suffix}', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
-
-
-def food101(**kwargs):
-    transform = kwargs['transform']
-    filename = kwargs['filename']
-
-    d = HashingDataset('data/food-101', transform=transform, filename=filename, ratio=kwargs.get('ratio', 1))
-    return d
+def subset_dataset(dataset: HashingDataset, indices):
+    train_data = dataset.train_data[indices]
+    train_labels = dataset.train_labels[indices]
+    new_dataset = HashingDataset(dataset.root,
+                                 dataset.transform,
+                                 dataset.target_transform,
+                                 dataset.filename,
+                                 dataset.separate_multiclass,
+                                 dataset.path_prefix,
+                                 dataset.loader,
+                                 dataset.selected_classes,
+                                 train_data,
+                                 train_labels,
+                                 verbose=False)
+    return new_dataset

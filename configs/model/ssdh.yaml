@@ -1,0 +1,12 @@
+# @package _global_
+
+model:
+  _target_: models.arch.ssdh.SSDH
+
+trainer:
+  _target_: trainers.ssdh.SSDHTrainer
+
+criterion:
+  _target_: models.loss.ssdh.SemanticStructureDHLoss
+  alpha: 2.0
+  beta: 2.0

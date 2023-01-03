@@ -1,0 +1,16 @@
+# @package _global_
+
+model:
+  _target_: models.arch.csq.CSQ
+
+trainer:
+  _target_: trainers.csq.CSQTrainer
+
+criterion:
+  _target_: models.loss.csq.CSQLoss
+  multiclass: ${dataset.multiclass}
+  nbit: ${model.nbit}
+  codebook:
+    _target_: trainers.orthohash.get_codebook
+    codebook_method: "H"  # N,B,O,H
+  lambda_q: 0.001

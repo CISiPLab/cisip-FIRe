@@ -1,0 +1,43 @@
+# @package _global_
+
+dataset:
+  train_dataset:
+    transform:
+      - _target_: utils.transforms.NCropsTransform
+        _args_:
+          - _target_: torchvision.transforms.Compose
+            transforms:
+              - - _target_: torchvision.transforms.RandomResizedCrop
+                  scale: [ 0.5, 1.0 ]
+                  size: 224
+                - _target_: torchvision.transforms.RandomHorizontalFlip
+                - _target_: torchvision.transforms.RandomApply
+                  _args_:
+                    - - _target_: torchvision.transforms.ColorJitter
+                        _args_: [ 0.4, 0.4, 0.4, 0.1 ]
+                  p: 0.7
+                - _target_: torchvision.transforms.RandomGrayscale
+                  p: 0.2
+                - _target_: torchvision.transforms.GaussianBlur
+                  kernel_size: 3
+                - _target_: torchvision.transforms.ToTensor
+                - _target_: utils.transforms.normalize_transform
+                  norm: 2
+          - _target_: torchvision.transforms.Compose
+            transforms:
+              - - _target_: torchvision.transforms.RandomResizedCrop
+                  scale: [ 0.5, 1.0 ]
+                  size: 224
+                - _target_: torchvision.transforms.RandomHorizontalFlip
+                - _target_: torchvision.transforms.RandomApply
+                  transforms:
+                    - - _target_: torchvision.transforms.ColorJitter
+                        _args_: [ 0.4, 0.4, 0.4, 0.1 ]
+                  p: 0.7
+                - _target_: torchvision.transforms.RandomGrayscale
+                  p: 0.2
+                - _target_: torchvision.transforms.GaussianBlur
+                  kernel_size: 3
+                - _target_: torchvision.transforms.ToTensor
+                - _target_: utils.transforms.normalize_transform
+                  norm: 2

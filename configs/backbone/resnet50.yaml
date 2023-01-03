@@ -1,0 +1,3 @@
+_target_: models.backbone.resnet.ResNet50
+pretrained: True
+custom_pretrained: null

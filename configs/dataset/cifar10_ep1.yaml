@@ -1,0 +1,75 @@
+data_folder: data/cifar
+nclass: 10
+ep: 1
+reset: False
+multiclass: False
+R: 1000
+norm: 2
+
+train_dataset:
+  _target_: utils.datasets.cifar
+  nclass: ${dataset.nclass}
+  evaluation_protocol: ${dataset.ep}
+  reset: ${dataset.reset}
+  root: ${data_dir}/${dataset.data_folder}
+  filename: train.txt
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.crop}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
+    - _target_: torchvision.transforms.RandomCrop
+      size: ${dataset.crop}
+      padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
+    - _target_: torchvision.transforms.RandomHorizontalFlip
+    - _target_: torchvision.transforms.ColorJitter
+      brightness: 0.05
+      contrast: 0.05
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: utils.transforms.normalize_transform
+      _args_:
+        - ${dataset.norm}
+
+test_dataset:
+  _target_: utils.datasets.cifar
+  nclass: ${dataset.nclass}
+  evaluation_protocol: ${dataset.ep}
+  reset: ${dataset.reset}
+  root: ${data_dir}/${dataset.data_folder}
+  filename: test.txt
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.crop}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
+    - _target_: torchvision.transforms.CenterCrop
+      size: ${dataset.crop}
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: utils.transforms.normalize_transform
+      _args_:
+        - ${dataset.norm}
+
+db_dataset:
+  _target_: utils.datasets.cifar
+  nclass: ${dataset.nclass}
+  evaluation_protocol: ${dataset.ep}
+  reset: ${dataset.reset}
+  root: ${data_dir}/${dataset.data_folder}
+  filename: database.txt
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.crop}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
+    - _target_: torchvision.transforms.CenterCrop
+      size: ${dataset.crop}
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: utils.transforms.normalize_transform
+      _args_:
+        - ${dataset.norm}

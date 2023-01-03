@@ -1,16 +1,16 @@
-from typing import List
-
 import timm
 import torch
 
-from models.backbone.base_backbone import BaseBackbone
+from models.backbone.base import BaseNet
 
 
-class SwinTransformerBackbone(BaseBackbone):
-    def __init__(self, nbit, nclass, vit_name, pretrained=False, freeze_weight=False, **kwargs):
-        super(SwinTransformerBackbone, self).__init__()
+class SwinViTBase(BaseNet):
+    name = 'swin_base_patch4_window7_224'
 
-        model = timm.create_model(vit_name, pretrained=pretrained)
+    def __init__(self, pretrained=True, **kwargs):
+        super(SwinViTBase, self).__init__()
+
+        model = timm.create_model(self.name, pretrained=pretrained)
 
         self.patch_embed = model.patch_embed
         self.pos_drop = model.pos_drop
@@ -19,18 +19,7 @@ class SwinTransformerBackbone(BaseBackbone):
         self.avgpool = model.avgpool
         self.head = model.head
 
-        self.in_features = model.num_features
-        self.nbit = nbit
-        self.nclass = nclass
-
-        assert freeze_weight is False, \
-            'freeze_weight in backbone deprecated. Use --backbone-lr-scale=0 to freeze backbone'
-
-    def get_features_params(self) -> List:
-        return list(self.parameters())
-
-    def get_hash_params(self) -> List:
-        raise NotImplementedError('no hash layer in backbone')
+        self.features_size = model.head.in_features
 
     def forward(self, x):
         x = self.patch_embed(x)
@@ -40,3 +29,16 @@ class SwinTransformerBackbone(BaseBackbone):
         x = self.avgpool(x.transpose(1, 2))  # B C 1
         x = torch.flatten(x, 1)
         return x
+
+    def classify(self, x):
+        x = self.forward(x)
+        x = self.head(x)
+        return x
+
+
+class SwinViTTiny(SwinViTBase):
+    name = 'swin_tiny_patch4_window7_224'
+
+
+class SwinViTSmall(SwinViTBase):
+    name = 'swin_small_patch4_window7_224'

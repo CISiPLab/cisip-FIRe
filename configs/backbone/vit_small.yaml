@@ -1,0 +1,7 @@
+_target_: models.backbone.vit.ViTSmall
+pretrained: True
+custom_pretrained: null
+drop_rate: 0.0
+attn_drop_rate: 0.0
+drop_path_rate: 0.0
+pool_method: "cls_token"

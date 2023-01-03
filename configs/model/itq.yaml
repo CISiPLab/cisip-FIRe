@@ -1,0 +1,14 @@
+# @package _global_
+
+defaults:
+  - override /model: identity
+
+features_size: ${dataset.features_size}
+
+trainer:
+  _target_: trainers.itq.ITQTrainer
+
+criterion:
+  _target_: models.loss.itq.ITQLoss
+  nbit: ${model.nbit}
+  max_iters: 100

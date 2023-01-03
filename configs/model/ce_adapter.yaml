@@ -1,0 +1,18 @@
+# @package _global_
+
+model:
+  _target_: models.arch.ce.CEWithAdapter
+  backbone:
+    _target_: models.backbone.vit.HuggingFaceViT
+    name: google/vit-base-patch32-224-in21k
+  nbit: 64
+  nclass: ${dataset.nclass}
+  adapter_bottleneck_dim: 384
+
+
+trainer:
+  _target_: trainers.ce.CETrainer
+
+criterion:
+  _target_: models.loss.ce.CELoss
+  multiclass: ${dataset.multiclass}

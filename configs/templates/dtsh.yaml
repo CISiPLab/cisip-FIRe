@@ -1,6 +1,0 @@
-# loss params
-loss: dtsh
-arch: dpn
-loss_param:
-  alpha: 5
-  lmbd: 1

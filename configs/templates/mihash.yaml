@@ -1,4 +1,0 @@
-loss: mihash
-# loss params
-loss_param:
-  nbins: 16

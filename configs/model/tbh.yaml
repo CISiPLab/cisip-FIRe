@@ -1,0 +1,12 @@
+# @package _global_
+
+model:
+  _target_: models.arch.tbh.TBH
+
+trainer:
+  _target_: trainers.tbh.TBHTrainer
+
+criterion:
+  _target_: models.loss.tbh.TBHLoss
+  adv: 1.0
+  rec_method: "element"

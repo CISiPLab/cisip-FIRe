@@ -1,0 +1,12 @@
+# @package _global_
+
+model:
+  _target_: models.arch.dtsh.DTSH
+
+trainer:
+  _target_: trainers.dtsh.DTSHTrainer
+
+criterion:
+  _target_: models.loss.dtsh.DTSHLoss
+  alpha: 5
+  lmbd: 1

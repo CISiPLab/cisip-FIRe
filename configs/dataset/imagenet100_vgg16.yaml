@@ -1,0 +1,20 @@
+data_folder: data/imagenet_vgg16d
+nclass: 100
+multiclass: False
+R: 1000
+features_size: 4096
+
+train_dataset:
+  _target_: utils.datasets.DescriptorDataset
+  root: ${data_dir}/${dataset.data_folder}
+  filename: train.txt
+
+test_dataset:
+  _target_: utils.datasets.DescriptorDataset
+  root: ${data_dir}/${dataset.data_folder}
+  filename: test.txt
+
+db_dataset:
+  _target_: utils.datasets.DescriptorDataset
+  root: ${data_dir}/${dataset.data_folder}
+  filename: database.txt

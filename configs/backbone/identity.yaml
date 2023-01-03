@@ -1,0 +1,2 @@
+_target_: models.backbone.identity.Identity
+features_size: ???  # must specify features size

@@ -1,0 +1,17 @@
+# @package _global_
+
+model:
+  _target_: models.arch.dpn.DPN
+
+trainer:
+  _target_: trainers.dpn.DPNTrainer
+
+criterion:
+  _target_: models.loss.dpn.DPNLoss
+  multiclass: ${dataset.multiclass}
+  codebook:
+    _target_: trainers.orthohash.get_codebook
+    codebook_method: "O"  # N,B,O,H
+  sl: 1
+  margin: 1
+  reg: 0.1

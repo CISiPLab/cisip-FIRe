@@ -1,0 +1,45 @@
+defaults:
+  - _self_
+  - /dataset: imagenet100
+  - /transforms: null
+  - /model: null
+  - /backbone: resnet50
+
+dataset_name: ${hydra:runtime.choices.dataset}
+
+model:
+  backbone: ${backbone}
+  nbit: 64
+  nclass: ${dataset.nclass}
+
+trainer: ???
+criterion: ???
+
+R: -1
+PRs: [ 1, 5, 10 ]
+
+batch_size: 64
+dist_metric: "hamming"
+ternary_threshold: 0
+
+exp: "validation"
+tag: ""
+seed: 42
+work_dir: ${hydra:runtime.cwd}
+data_dir: ${work_dir}
+wandb: False
+device: "cuda"
+use_last: False
+compute_mAP: True  # False = compute PRs
+
+save_code: False
+
+logdir: ???
+
+hydra:
+  run:
+    dir: ${work_dir}/${logdir}/evaluations/${tag}${seed}_${now:%y%m%d_%H%M%S_%f}
+  job:
+    chdir: False
+
+eval_logdir: ${hydra:run.dir}

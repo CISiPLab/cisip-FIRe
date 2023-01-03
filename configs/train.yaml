@@ -1,0 +1,39 @@
+defaults:
+  - _self_
+  - /dataset: imagenet100
+  - /transforms: null
+  - /scheduler: csw
+  - /model: null
+  - /backbone: null
+  - /optim: adam
+
+dataset_name: ${hydra:runtime.choices.dataset}
+
+trainer: ???
+criterion: ???
+
+batch_size: 64
+epochs: 100
+backbone_lr_scale: 1
+dist_metric: "hamming"
+
+exp: "hashing"
+tag: ""
+seed: 42
+work_dir: ${hydra:runtime.cwd}
+data_dir: ${work_dir}
+wandb: False
+device: "cuda"
+eval_interval: 10
+save_interval: 0
+save_training_state: False  # for resume
+
+hydra:
+  run:
+    dir: ${work_dir}/logs/${hydra:runtime.choices.dataset}/${hydra:runtime.choices.model}${model.nbit}_${epochs}/${tag}${seed}_${now:%y%m%d_%H%M%S_%f}
+  job:
+    chdir: False
+
+logdir: ${hydra:run.dir}
+resume_logdir: null
+finetune_path: null

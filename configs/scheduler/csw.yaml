@@ -1,0 +1,3 @@
+_target_: utils.lr_scheduler.cosine_decay_linear_warmup
+epochs: ${epochs}
+warmup_epochs: 10

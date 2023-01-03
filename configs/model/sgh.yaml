@@ -1,0 +1,13 @@
+# @package _global_
+
+model:
+  _target_: models.arch.gh.SupGreedyHash
+
+trainer:
+  _target_: trainers.gh.SupGHTrainer
+
+criterion:
+  _target_: models.loss.gh.SupGHLoss
+  multiclass: ${dataset.multiclass}
+  alpha: 0.1  # quantization error
+  pow: 3.0

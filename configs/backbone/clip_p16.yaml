@@ -1,0 +1,3 @@
+_target_: models.backbone.clip.CLIPVision
+name: openai/clip-vit-base-patch16
+get_feat_map: False

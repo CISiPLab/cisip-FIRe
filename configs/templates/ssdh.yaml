@@ -1,8 +1,0 @@
-arch: norm-unsupervised
-loss: ssdh
-
-# loss params
-loss_param:
-  alpha: 2
-  beta: 2
-  hash_layer: 'tanh'

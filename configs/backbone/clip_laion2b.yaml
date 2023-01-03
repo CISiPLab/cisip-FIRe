@@ -1,0 +1,2 @@
+_target_: models.backbone.clip.CLIP
+name: laion/CLIP-ViT-B-32-laion2B-s34B-b79K

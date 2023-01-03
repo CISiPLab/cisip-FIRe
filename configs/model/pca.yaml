@@ -1,0 +1,15 @@
+# @package _global_
+
+defaults:
+  - override /model: identity
+
+features_size: ${dataset.features_size}
+
+trainer:
+  _target_: trainers.pca.PCATrainer
+
+criterion:
+  _target_: models.loss.pca.PCALoss
+  nbit: ${model.nbit}
+  whiten: False
+  whiten_input: False

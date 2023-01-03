@@ -1,0 +1,14 @@
+# @package _global_
+
+defaults:
+  - override /model: identity
+
+features_size: ${dataset.features_size}
+
+trainer:
+  _target_: trainers.lsh.LsHTrainer
+
+criterion:
+  _target_: models.loss.lsh.LsHLoss
+  nbit: ${model.nbit}
+  whiten_input: False

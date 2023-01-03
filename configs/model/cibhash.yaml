@@ -1,0 +1,16 @@
+# @package _global_
+defaults:
+  - override /transforms: cibhash
+
+model:
+  _target_: models.arch.cibhash.CIBHash
+
+trainer:
+  _target_: trainers.cibhash.CIBHashTrainer
+
+criterion:
+  _target_: models.loss.cibhash.CIBHashLoss
+  multiclass: ${dataset.multiclass}
+  beta: 0.001
+  temperature: 0.3
+

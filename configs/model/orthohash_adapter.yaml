@@ -1,0 +1,29 @@
+# @package _global_
+
+model:
+  _target_: models.arch.orthohash.OrthoHashWithAdapter
+  codebook:
+    _target_: trainers.orthohash.get_codebook
+    codebook_method: "N"
+    nclass: ${model.nclass}
+    nbit: ${model.nbit}
+  backbone:
+    _target_: models.backbone.vit.HuggingFaceViT
+    name: google/vit-base-patch32-224-in21k
+  nbit: 64
+  nclass: ${dataset.nclass}
+  adapter_bottleneck_dim: 384
+
+trainer:
+  _target_: trainers.orthohash.OrthoHashTrainer
+
+criterion:
+  _target_: models.loss.orthohash.OrthoHashLoss
+  ce: 1
+  s: 8
+  m: 0.2
+  m_type: "cos"  # cos/arc
+  multiclass: ${dataset.multiclass}
+  quan: 0
+  quan_type: "cs"
+  multiclass_loss: "label_smoothing"
