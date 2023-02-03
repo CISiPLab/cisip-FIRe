@@ -26,7 +26,7 @@ tar -xzf imagenet.tar.gz
 This is a subset/variant of original NUS-WIDE dataset, we do not own the dataset. 
 Please head to [NUS-WIDE official website](https://lms.comp.nus.edu.sg/wp-content/uploads/2019/research/nuswide/NUS-WIDE.html)
 to read and accept their term of uses and license before download the dataset 
-[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022). This is a subset with 21 most common classes.
+[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) or [here](https://www.kaggle.com/datasets/xinleili/nuswide) (updated Feb 2023). This is a subset with 21 most common classes.
 
 Download and extract the archive at `data/` directory:
 ```bash
