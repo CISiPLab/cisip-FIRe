@@ -92,7 +92,7 @@ Please head up to [Tutorials Docs](https://fast-image-retrieval.readthedocs.io/e
 
 If you find this framework useful in your research, please consider cite this project.
 
-```
+```bibtex
 @inproceedings{dpn2020,
   title={Deep Polarized Network for Supervised Learning of Accurate Binary Hashing Codes.},
   author={Fan, Lixin and Ng, Kam Woh and Ju, Ce and Zhang, Tianyu and Chan, Chee Seng},
