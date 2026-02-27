@@ -14,7 +14,7 @@ The dataset will be downloaded automatically at the first time of running.
 This is a subset/variant of original ImageNet dataset, we do not own the dataset. 
 Please head to [ImageNet official website](https://www.image-net.org/)
 to read and accept their term of uses and license before download the dataset 
-[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022). This is a subset with most common 100 classes.
+[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022) or [huggingface](https://huggingface.co/datasets/jiuntian/OrthoHash) (updated Feb 2026). This is a subset with most common 100 classes.
 
 Download and extract the archive at `data/` directory:
 ```bash
@@ -26,7 +26,7 @@ tar -xzf imagenet.tar.gz
 This is a subset/variant of original NUS-WIDE dataset, we do not own the dataset. 
 Please head to [NUS-WIDE official website](https://lms.comp.nus.edu.sg/wp-content/uploads/2019/research/nuswide/NUS-WIDE.html)
 to read and accept their term of uses and license before download the dataset 
-[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) or [here](https://www.kaggle.com/datasets/xinleili/nuswide) (updated Feb 2023). This is a subset with 21 most common classes.
+[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) or [here](https://www.kaggle.com/datasets/xinleili/nuswide) (updated Feb 2023) or [huggingface](https://huggingface.co/datasets/jiuntian/OrthoHash) (updated Feb 2026). This is a subset with 21 most common classes.
 
 Download and extract the archive at `data/` directory:
 ```bash
@@ -38,7 +38,7 @@ tar -xzf nuswide_v2_256.tar.gz
 This is a subset/variant of original MS-COCO dataset, we do not own the dataset. 
 Please head to [MS-COCO official website](https://cocodataset.org/#termsofuse)
 to read and accept their term of uses and license before download the dataset 
-[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022).
+[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022) or [huggingface](https://huggingface.co/datasets/jiuntian/OrthoHash) (updated Feb 2026).
 
 Download and extract the archive at `data/` directory:
 ```bash
@@ -50,7 +50,7 @@ tar -xzf coco.tar.gz
 This is a subset/variant of original MIRFLICKR dataset, we do not own the dataset. 
 Please head to [MIRFLICKR official website](https://press.liacs.nl/mirflickr/)
 to read and accept their term of uses and license before download the dataset 
-[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022).
+[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022) or [huggingface](https://huggingface.co/datasets/jiuntian/OrthoHash) (updated Feb 2026).
 
 Download and extract the archive at `data/` directory:
 ```bash
@@ -62,7 +62,7 @@ tar -xzf mirflickr.tar.gz
 This is a subset/variant of original Stanford Online Product dataset, we do not own the dataset. 
 Please head to [Stanford Online Product official website](https://cvgl.stanford.edu/projects/lifted_struct/)
 to read and accept their term of uses and license before download the dataset 
-[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022).
+[here](https://entuedu-my.sharepoint.com/:f:/g/personal/jiuntian001_e_ntu_edu_sg/EuuKVcqoIgZPtWsKpC5BmnwB90sJUFhPZGBxrXvglgmxEw) (updated Aug 2022) or [huggingface](https://huggingface.co/datasets/jiuntian/OrthoHash) (updated Feb 2026).
 
 Download and extract the archive at `data/` directory:
 ```bash
